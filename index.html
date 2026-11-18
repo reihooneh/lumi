@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumi: your pocket buddy</title>
+<meta name="description" content="Lumi is a pocket wellbeing buddy for young people in NSW: talk it out, calm down, get letters explained in your family's language, know your money and work rights, and share ideas with government.">
+<meta name="theme-color" content="#d9ceff">
+<meta property="og:title" content="Lumi: your pocket buddy">
+<meta property="og:description" content="A pocket wellbeing buddy for young people in NSW, made by a young person from Auburn.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: warm, playful, never preachy; a friend in your pocket, not a form
+   IDEA: a companion app whose living 3D character, Lumi, reacts to everything you do
+   PICTURE: big live 3D Lumi (moods, expressions, accessories, talking mouth, hearts) on bold pastel fields
+   COLOUR and TYPE: warm white, plum ink #2b2341, flat pastel fields lilac/peach/mint/butter/sky, hot pink #ff5d73 accent; Fredoka + Nunito
+   LAYOUT: desktop pill nav, phone bottom tab bar + More sheet; every page = coloured hero then tools in cards */
+:root{color-scheme:light dark;
+--bg:light-dark(#fffaf6,#17112a);--ink:light-dark(#2b2341,#f4efff);--mut:light-dark(#6b6385,#b9b0d6);
+--card:light-dark(#ffffff,#231b3c);--line:light-dark(#ece4f5,#352b55);--soft:light-dark(#f7f2ff,#1d1633);
+--lil:light-dark(#d9ceff,#3b2f6e);--pea:light-dark(#ffd9c7,#5a3346);--min:light-dark(#c9f2e1,#1f4a42);--but:light-dark(#fff1b0,#4f4423);--sky:light-dark(#cfe6ff,#1f3556);--ros:light-dark(#ffd1dc,#5a2a3c);
+--acc:#ff5d73;--sh:light-dark(0 14px 34px -14px rgba(60,30,110,.28),0 14px 34px -14px rgba(0,0,0,.7))}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:80px;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Nunito,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Fredoka,Nunito,sans-serif;line-height:1.05;text-wrap:balance;margin:0 0 .35em;font-weight:700}
+h1{font-size:clamp(36px,6vw,52px)}h2{font-size:clamp(26px,3.6vw,34px)}h3{font-size:20px;font-weight:600}
+p{margin:0 0 1em;max-width:66ch}
+a{color:inherit}
+.mut{color:var(--mut)}.small{font-size:14px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 max(4vw,16px)}
+[hidden]{display:none!important}
+/* capability switches */
+body:not(.has-cam) .need-cam,body:not(.has-ai) .need-ai,body.has-ai .no-ai,body:not(.has-mic) .mic,body:not(.has-tts) .need-tts,body:not(.has-dl) .need-dl{display:none!important}
+/* top nav */
+.top{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:14px;padding-block:10px}
+.logo{display:flex;align-items:center;gap:8px;font:700 24px Fredoka,sans-serif;text-decoration:none;flex:none}
+.logo i{width:32px;height:32px;border-radius:50% 50% 46% 54%;background:radial-gradient(circle at 35% 30%,#fff 0 10%,#c6b6ff 32%,#ff8fa3 100%);display:block;animation:wob 4s ease-in-out infinite}
+.nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:2px}
+.nav::-webkit-scrollbar{display:none}
+.nav a{flex:none;text-decoration:none;font:600 15px Fredoka,sans-serif;padding:10px 13px;border-radius:999px;min-height:44px;display:flex;align-items:center}
+.nav a:hover{background:var(--line)}
+.nav a[aria-current=page]{background:var(--ink);color:var(--bg)}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,label:focus-within{outline:3px solid var(--acc);outline-offset:2px}
+/* phone tab bar */
+.tabbar{display:none;position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:40;background:var(--card);border-radius:26px;box-shadow:var(--sh);padding:6px;justify-content:space-around;border:1px solid var(--line)}
+.tabbar a,.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;font:600 12px Fredoka,sans-serif;color:var(--mut);background:none;border:0;padding:6px 0;border-radius:18px;min-height:52px;justify-content:center;cursor:pointer}
+.tabbar svg{width:24px;height:24px}
+.tabbar [aria-current=page]{color:var(--ink);background:var(--lil)}
+.sheet{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;background:rgba(20,10,40,.4)}
+.sheet>div{background:var(--card);width:100%;border-radius:28px 28px 0 0;padding:20px 16px calc(24px + env(safe-area-inset-bottom));animation:up .3s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{transform:translateY(100%)}}
+.sheet nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.sheet nav a{text-decoration:none;border-radius:20px;padding:14px 8px;text-align:center;font:600 15px Fredoka;min-height:64px;display:flex;align-items:center;justify-content:center}
+/* pages */
+.page{display:none;padding:0 0 72px}
+.page.on{display:block;animation:pin .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes pin{from{opacity:0;transform:translateY(14px)}}
+.band{margin:0 calc(50% - 50vw);padding:clamp(24px,4vw,48px) max(4vw,16px);border-radius:0 0 44px 44px}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(16px,4vw,48px);align-items:center;max-width:1240px;margin:0 auto}
+.stage{position:relative;aspect-ratio:1/1;max-height:540px;width:100%;border-radius:40px;overflow:hidden;isolation:isolate}
+.stage::before,.stage::after{content:"";position:absolute;border-radius:50%;z-index:-1;animation:drift 12s ease-in-out infinite}
+.stage::before{width:60%;height:60%;left:-12%;top:-10%;background:light-dark(rgba(255,255,255,.35),rgba(255,255,255,.07))}
+.stage::after{width:45%;height:45%;right:-8%;bottom:-6%;background:light-dark(rgba(255,255,255,.25),rgba(255,255,255,.05));animation-delay:-6s}
+@keyframes drift{50%{transform:translate(18px,14px) scale(1.08)}}
+.stage canvas{position:absolute;inset:0;width:100%!important;height:100%!important;cursor:pointer;touch-action:none}
+.stage.sm{aspect-ratio:4/3;max-height:300px}
+.bubble{position:absolute;left:50%;top:7%;transform:translateX(-50%);background:var(--card);color:var(--ink);padding:10px 16px;border-radius:20px;font:600 16px Fredoka,sans-serif;box-shadow:var(--sh);max-width:84%;text-align:center;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:2}
+.bubble::after{content:"";position:absolute;left:50%;bottom:-8px;width:16px;height:16px;background:inherit;transform:translateX(-50%) rotate(45deg);border-radius:3px}
+.bubble.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
+.fallback{position:absolute;inset:18%;border-radius:48% 52% 50% 50%;background:radial-gradient(circle at 35% 30%,#fff 0 6%,#d8cbff 25%,#ff9fb1 100%);animation:wob 4s ease-in-out infinite}
+@keyframes wob{50%{border-radius:55% 45% 52% 48%;transform:scale(1.04)}}
+.lead{font-size:19px}
+.btn{font:600 16px Fredoka,sans-serif;min-height:48px;padding:0 22px;border-radius:999px;border:0;background:var(--acc);color:#fff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:transform .15s,background .2s}
+.btn:hover{transform:translateY(-2px)}.btn:active{transform:scale(.97)}
+.btn[disabled]{opacity:.55;cursor:wait;transform:none}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--line)}
+.btn.ink{background:var(--ink);color:var(--bg)}
+.btn.sm{min-height:40px;padding:0 14px;font-size:14px}
+.btn svg{width:20px;height:20px}
+.icon{width:48px;min-width:48px;padding:0;border-radius:50%}
+.mic.rec{background:var(--acc);color:#fff;box-shadow:0 0 0 0 rgba(255,93,115,.6);animation:pulse 1.2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 14px rgba(255,93,115,0)}}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:18px;margin-top:22px}
+.feat{display:block;text-decoration:none;padding:22px;border-radius:28px;transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden;color:#2b2341}
+.feat:hover{transform:translateY(-4px) rotate(-.4deg);box-shadow:var(--sh)}
+.feat svg{width:48px;height:48px;margin-bottom:10px}
+.feat p{margin:0;font-size:15px}
+.feat .go{position:absolute;right:18px;top:18px;font:700 20px Fredoka}
+.feat .new{position:absolute;right:16px;bottom:16px;background:#2b2341;color:#fff;font:600 12px Fredoka;padding:3px 9px;border-radius:999px}
+.f1{background:#cfe6ff}.f2{background:#c9f2e1}.f3{background:#d9ceff}.f4{background:#fff1b0}.f5{background:#ffd9c7}.f6{background:#ffd1dc}
+.card{background:var(--card);border-radius:28px;padding:clamp(18px,3vw,28px);box-shadow:var(--sh)}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;margin-top:22px;align-items:start}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:22px}
+.lbl{display:block;font-weight:800;margin:14px 0 6px}
+input[type=text],input[type=number],textarea,select{font:16px Nunito,sans-serif;width:100%;min-height:48px;padding:10px 14px;border-radius:16px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+textarea{min-height:96px;resize:vertical}
+input[type=range]{width:100%;accent-color:var(--acc);min-height:32px}
+.inrow{display:flex;gap:8px;align-items:flex-end}
+.inrow>:first-child{flex:1}
+.today{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:-28px;position:relative;z-index:2}
+.tile{background:var(--card);border-radius:24px;padding:16px 18px;box-shadow:var(--sh)}
+.tile b{display:block;font:700 30px/1.1 Fredoka;margin:2px 0}
+.tile span{font-size:14px;color:var(--mut)}
+.moods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.mood{min-height:84px;border-radius:22px;border:3px solid transparent;cursor:pointer;font:600 16px Fredoka,sans-serif;color:#2b2341;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:transform .15s}
+.mood:hover{transform:scale(1.04)}
+.mood svg{width:30px;height:30px}
+.mood[aria-pressed=true]{border-color:var(--ink);transform:scale(1.05)}
+.hist{display:flex;align-items:flex-end;gap:6px;height:150px;margin-top:10px;padding-top:10px}
+.hist div{flex:1;max-width:56px;border-radius:10px 10px 4px 4px;min-height:8px;position:relative}
+.hist span{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--mut);white-space:nowrap}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:10px}
+.cal div{aspect-ratio:1;border-radius:12px;display:flex;align-items:center;justify-content:center;font:600 13px Fredoka;background:var(--soft);color:var(--mut)}
+.cal .h{background:none;aspect-ratio:auto;font-size:12px}
+.cal .td{box-shadow:inset 0 0 0 2px var(--ink);color:var(--ink)}
+.cal .x{color:#2b2341}
+.pill{display:inline-block;padding:4px 12px;border-radius:999px;font:600 14px Fredoka,sans-serif;background:var(--line)}
+.big{font:700 clamp(40px,7vw,64px)/1 Fredoka,sans-serif}
+.tip{border-radius:22px;padding:16px 18px;margin-top:14px;color:#2b2341}
+.bg-lil{background:var(--lil)}.bg-pea{background:var(--pea)}.bg-min{background:var(--min)}.bg-but{background:var(--but)}.bg-sky{background:var(--sky)}.bg-ros{background:var(--ros)}
+.tip.bg-lil,.tip.bg-pea,.tip.bg-min,.tip.bg-but,.tip.bg-sky,.tip.bg-ros{color:var(--ink)}
+.help{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:12px;margin-top:14px}
+.help div{background:var(--soft);border-radius:20px;padding:14px 16px}
+.help b{font:700 22px Fredoka,sans-serif;display:block;white-space:nowrap}
+.sense{display:grid;gap:10px;margin-top:10px}
+.sense label{display:flex;gap:12px;align-items:center;background:var(--soft);border-radius:18px;padding:10px 14px;cursor:pointer;min-height:52px}
+.sense input[type=checkbox]{width:24px;height:24px;accent-color:var(--acc);flex:none}
+.sense .n{font:700 22px Fredoka;width:26px;flex:none;text-align:center}
+.part{border:2px solid var(--line);border-radius:20px;padding:12px 14px;margin-top:12px}
+.part .hd{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sw{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;cursor:pointer;min-height:44px}
+.sw input{width:22px;height:22px;accent-color:var(--acc)}
+.pass{background:#2b2341;color:#f4efff;border-radius:26px;padding:22px;font-size:15px;white-space:pre-wrap;line-height:1.6;min-height:120px}
+.pass h3{color:#fff}
+.donut{display:grid;grid-template-columns:180px minmax(0,1fr);gap:18px;align-items:center}
+.legend div{display:flex;align-items:center;gap:8px;font-size:15px;margin:4px 0}
+.legend i{width:14px;height:14px;border-radius:5px;flex:none}
+.legend em{margin-left:auto;font-style:normal;font-weight:800;white-space:nowrap}
+.money-in{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 14px}
+.q{background:var(--soft);border-radius:20px;padding:14px 16px;margin-top:10px}
+.q p{margin:0 0 8px;font-weight:700}
+.yn{display:flex;gap:8px}
+.yn button{flex:1;min-height:44px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:600 15px Fredoka;cursor:pointer}
+.yn button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+table{width:100%;border-collapse:collapse;margin-top:12px;font-size:15px}
+th,td{text-align:left;padding:10px 6px;border-bottom:1px solid var(--line)}
+td.r,th.r{text-align:right;white-space:nowrap}
+.steps{display:flex;gap:6px;margin:12px 0 8px}
+.steps i{flex:1;height:10px;border-radius:5px;background:var(--line)}
+.steps i.on{background:var(--acc)}
+.idea{border:2px solid var(--line);border-radius:22px;padding:16px;margin-top:12px}
+.code{font:700 18px Fredoka;letter-spacing:.04em;background:#fff1b0;color:#2b2341;padding:4px 10px;border-radius:10px;white-space:nowrap}
+.empty{padding:18px;border-radius:20px;background:var(--soft);color:var(--mut)}
+.confetti{position:fixed;width:10px;height:14px;border-radius:3px;pointer-events:none;z-index:80;animation:cf 1.1s ease-out forwards}
+@keyframes cf{to{transform:translate(var(--x),var(--y)) rotate(var(--r));opacity:0}}
+.heart{position:fixed;pointer-events:none;z-index:80;width:22px;height:22px;animation:hf 1.2s ease-out forwards}
+@keyframes hf{to{transform:translate(var(--x),-120px) scale(1.4);opacity:0}}
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#2b2341;color:#fff;padding:12px 18px;border-radius:18px;font-weight:600;z-index:90;box-shadow:var(--sh);max-width:90vw;text-align:center;animation:pin .3s}
+/* chat */
+.chatbox{display:flex;flex-direction:column;height:min(70vh,640px);min-height:420px}
+.msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:4px 2px 10px}
+.msg{max-width:86%;padding:12px 16px;border-radius:22px;white-space:pre-wrap;line-height:1.5}
+.msg.l{background:var(--lil);align-self:flex-start;border-bottom-left-radius:6px}
+.msg.u{background:#2b2341;color:#fff;align-self:flex-end;border-bottom-right-radius:6px}
+.msg.p{opacity:.75}
+.dots i{display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;margin:0 2px;animation:dt 1s infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes dt{50%{transform:translateY(-5px);opacity:.4}}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chip{font:600 14px Fredoka,sans-serif;min-height:40px;padding:0 14px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.compose{display:flex;gap:8px;align-items:flex-end;border-top:1px solid var(--line);padding-top:12px}
+.compose textarea{min-height:52px;max-height:140px;flex:1}
+.crisis{background:#2b2341;color:#fff;border-radius:22px;padding:16px 18px;margin-bottom:12px}
+.crisis b{white-space:nowrap}
+.notice{border-radius:20px;padding:14px 16px;background:var(--but);color:var(--ink);margin-top:14px;font-weight:600}
+/* lens */
+.drop{border:3px dashed var(--line);border-radius:26px;padding:22px;text-align:center;background:var(--soft);display:grid;gap:12px;justify-items:center}
+.drop.over{border-color:var(--acc)}
+.drop img{max-width:100%;max-height:300px;border-radius:16px;box-shadow:var(--sh)}
+.filebtn{position:relative;overflow:hidden}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:100px}
+.res{display:grid;gap:12px;margin-top:14px}
+.res div{background:var(--soft);border-radius:18px;padding:12px 16px}
+.res b{display:block;font:600 14px Fredoka;color:var(--mut);margin-bottom:2px}
+.res ul{margin:4px 0 0;padding-left:20px}
+.scanline{position:relative;overflow:hidden}
+.scanline::after{content:"";position:absolute;left:0;right:0;height:30%;top:-30%;background:linear-gradient(transparent,rgba(255,93,115,.35),transparent);animation:scan 1.4s linear infinite}
+@keyframes scan{to{top:100%}}
+.cam{position:fixed;inset:0;z-index:70;background:rgba(10,5,25,.88);display:flex;align-items:center;justify-content:center;padding:16px}.cam>div{width:min(720px,100%)}.cam video{width:100%;max-height:70vh;border-radius:20px;background:#000;display:block;object-fit:contain}.cam .btn.ghost{color:#fff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.4)}
+progress{accent-color:var(--acc);height:10px}
+/* me */
+.sw8{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.swatch{width:48px;height:48px;border-radius:50%;border:3px solid transparent;cursor:pointer}
+.swatch[aria-pressed=true]{border-color:var(--ink);transform:scale(1.08)}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-top:12px}
+.badge{border-radius:22px;padding:14px;text-align:center;background:var(--soft);font-size:14px}
+.badge svg{width:46px;height:46px;display:block;margin:0 auto 6px}
+.badge.lock{opacity:.45;filter:grayscale(1)}
+.badge b{display:block;font:600 15px Fredoka}
+.garden{width:100%;height:auto;display:block;border-radius:26px}
+.worry{font:600 20px Fredoka;transition:transform 1.2s cubic-bezier(.5,0,.2,1),opacity 1.2s;transform-origin:center;text-align:center;padding:10px}
+.worry.shrink{transform:scale(.35);opacity:.35}
+.wcards{display:grid;gap:10px;margin-top:12px}
+.wcards div{border-radius:18px;padding:12px 16px;color:var(--ink)}
+.diff{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:20px}
+.diff .card h3{margin-top:6px}
+.marq{overflow:hidden;white-space:nowrap;border-block:2px solid var(--ink);padding:12px 0;margin-top:40px;font:600 20px Fredoka}
+.marq span{display:inline-block;animation:mq 30s linear infinite}
+@keyframes mq{to{transform:translateX(-50%)}}
+footer{border-top:1px solid var(--line);padding:28px 0 40px;font-size:14px;color:var(--mut)}
+@media(max-width:900px){.today{grid-template-columns:repeat(2,minmax(0,1fr))}.diff,.three{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:820px){.hero,.two{grid-template-columns:minmax(0,1fr)}.stage{max-height:360px;aspect-ratio:5/4}.hero>.stage{order:-1}
+ .top .nav{display:none}.tabbar{display:flex}.page{padding-bottom:110px}footer{padding-bottom:120px}.toast{bottom:calc(100px + env(safe-area-inset-bottom))}.chatbox{height:auto;min-height:0}.msgs{max-height:55vh;min-height:240px}}
+@media(max-width:600px){.moods{grid-template-columns:repeat(2,minmax(0,1fr))}.donut{grid-template-columns:minmax(0,1fr);justify-items:center}.money-in{grid-template-columns:minmax(0,1fr)}.band{border-radius:0 0 32px 32px}h1{font-size:34px}.lead{font-size:17px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="logo" href="#home" aria-label="Lumi home"><i></i><span>Lumi</span></a>
+  <nav class="nav" aria-label="Pages" id="topnav"></nav>
+  <span class="pill need-ai" id="aiPill" style="margin-left:auto;flex:none">AI on</span>
+</div></header>
+
+<main class="wrap">
+
+<!-- HOME -->
+<section class="page" id="p-home">
+  <div class="band bg-lil">
+    <div class="hero">
+      <div>
+        <span class="pill" style="background:rgba(255,255,255,.6);color:#2b2341" id="hello">Hey there</span>
+        <h1 style="margin-top:14px">Your pocket buddy for the hard stuff.</h1>
+        <p class="lead">Talk it out with Lumi using your voice. Snap a confusing letter and get it explained for you and your family. Calm down in 60 seconds. Know your money and your work rights. Lumi grows with you.</p>
+        <div class="row"><a class="btn" href="#talk">Talk to Lumi</a><a class="btn ink" href="#lens">Scan a letter</a><a class="btn ghost" href="#calm">Calm down</a></div>
+        <p class="small mut" style="margin-top:14px">Tap or drag on Lumi. Lumi likes it.</p>
+      </div>
+      <div class="stage bg-sky" data-stage><div class="bubble"></div></div>
+    </div>
+  </div>
+  <div class="today" id="today"></div>
+  <h2 style="margin-top:40px">Everything in one place</h2>
+  <div class="grid" id="feats"></div>
+  <h2 style="margin-top:44px">What makes Lumi different</h2>
+  <div class="diff">
+    <div class="card"><span class="pill bg-ros" style="color:var(--ink)">Talks and listens</span><h3>A buddy you can actually talk to</h3><p class="mut" style="margin:0">Speak instead of typing, and Lumi can talk back in a real voice. Its face reacts to the conversation as you go.</p></div>
+    <div class="card"><span class="pill bg-but" style="color:var(--ink)">Built for multicultural families</span><h3>Letters explained, in your family's language</h3><p class="mut" style="margin:0">In many families, young people translate letters for their parents. Lumi reads the letter and explains it in plain English, in Arabic, Mandarin, Nepali and more, so you don't have to do it alone.</p></div>
+    <div class="card"><span class="pill bg-min" style="color:var(--ink)">Warm handover</span><h3>Tell your story once</h3><p class="mut" style="margin:0">Lumi can turn your chat into a Story Pass for a counsellor. You choose every part that gets shared, so you don't have to start from zero each time.</p></div>
+  </div>
+  <div class="marq" aria-hidden="true"><span>your feelings are valid · one breath at a time · you only have to tell it once · know your worth (and your pay) · your ideas deserve a reply · you're not alone · your feelings are valid · one breath at a time · you only have to tell it once · know your worth (and your pay) · your ideas deserve a reply · you're not alone · </span></div>
+</section>
+
+<!-- TALK -->
+<section class="page" id="p-talk">
+  <div class="band bg-ros">
+    <div class="hero">
+      <div>
+        <h1>Talk to Lumi.</h1>
+        <p class="lead">Type or tap the mic and just talk. Lumi listens, helps you think it through, and points you to real help when you need it.</p>
+        <div class="row">
+          <label class="sw need-tts"><input type="checkbox" id="ttsOn"> Lumi speaks replies</label>
+          <select id="voiceSel" class="need-tts" style="width:auto;max-width:100%;min-height:44px" aria-label="Lumi's voice"></select>
+        </div>
+        <p class="small no-ai" style="margin-top:12px"><b>Lumi's AI brain is off right now.</b> <a href="#me">Switch it on in My Lumi</a>. Until then, Lumi gives simple replies and everything else still works.</p>
+      </div>
+      <div class="stage sm bg-but" data-stage><div class="bubble"></div></div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="card chatbox">
+      <div class="crisis" id="crisis" hidden><b style="font-family:Fredoka;font-size:18px">You matter, and you deserve real support right now.</b><br>Kids Helpline <b>1800 55 1800</b> (ages 5–25, 24/7) · Lifeline <b>13 11 14</b> · If you're in danger, call <b>000</b>.</div>
+      <div class="msgs" id="msgs" aria-live="polite"></div>
+      <div class="chips" id="starters"></div>
+      <div class="compose">
+        <textarea id="chatIn" placeholder="Tell Lumi what's going on…" aria-label="Message to Lumi"></textarea>
+        <button class="btn ghost icon mic" data-for="chatIn" type="button" aria-label="Speak instead of typing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+        <button class="btn icon" id="chatSend" type="button" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h3>Turn this chat into a Story Pass</h3>
+        <p class="mut">Seeing a counsellor or GP soon? Lumi can draft your Story Pass from what you've said. You check and edit every part before anyone sees it.</p>
+        <div class="row"><button class="btn need-ai" id="toPass" type="button">Make my Story Pass</button><button class="btn ghost" id="clrChat" type="button">Clear chat</button></div>
+        <p class="small mut no-ai" style="margin-top:10px">This needs Lumi's AI brain. <a href="#me">Switch it on in My Lumi</a>.</p>
+      </div>
+      <div class="tip bg-lil">
+        <h3>Good to know</h3>
+        <p style="margin:0">Lumi is a friendly AI, not a counsellor or doctor. Your chat is saved only on this device, and the Clear chat button deletes it. For real support any time: Kids Helpline <b style="white-space:nowrap">1800 55 1800</b>, Lifeline <b style="white-space:nowrap">13 11 14</b>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LENS -->
+<section class="page" id="p-lens">
+  <div class="band bg-but">
+    <div style="max-width:1240px;margin:0 auto">
+      <span class="pill" style="background:rgba(255,255,255,.6);color:#2b2341">Lumi Lens · camera</span>
+      <h1 style="margin-top:12px">Snap it. Lumi explains it.</h1>
+      <p class="lead">Got a confusing letter, bill, school note, lease or payslip? Take a photo and Lumi explains it in plain English, tells you what to do, and can translate it for your family.</p>
+    </div>
+  </div>
+  <div class="two">
+    <div class="card">
+      <div class="chips" id="lensModes" role="group" aria-label="What should Lumi do?"></div>
+      <div class="drop" id="drop">
+        <img id="lensImg" alt="Your photo" hidden>
+        <p class="mut" id="dropTxt" style="margin:0">Open the camera, choose a photo, or drag one here.</p>
+        <div class="row" style="justify-content:center">
+          <button class="btn need-cam" id="camOpen" type="button">Open camera</button>
+          <span class="btn ghost filebtn">Choose a photo<input type="file" accept="image/*" id="fileIn" aria-label="Choose a photo"></span>
+        </div>
+      </div>
+      <label class="lbl" for="lensLang">Also explain it in (for your family)</label>
+      <select id="lensLang"></select>
+      <div class="row" style="margin-top:14px"><button class="btn need-ai" id="lensGo" type="button">Ask Lumi</button></div>
+      <p class="small no-ai" style="margin-top:12px"><b>Lumi Lens needs Lumi's AI brain.</b> <a href="#me">Switch it on in My Lumi</a>.</p>
+      <p class="small mut" style="margin-top:10px">Privacy tip: cover card numbers, Medicare or tax file numbers before you snap. With Cloud AI, your photo goes to the Lumi server to be read and isn't stored. With on-device AI, it never leaves your device.</p>
+    </div>
+    <div class="card">
+      <h2 id="lensH">What Lumi found</h2>
+      <div id="lensOut"><div class="empty">Your explanation will show up here. Pick what you want Lumi to do, then add a photo.</div></div>
+      <div class="row need-tts" id="lensSpeak" hidden style="margin-top:12px"><button class="btn ink sm" id="sayEn" type="button">Read it aloud</button><button class="btn ghost sm" id="sayTr" type="button" hidden>Read the translation</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- CHECK-IN -->
+<section class="page" id="p-checkin">
+  <div class="band bg-sky">
+    <div class="hero">
+      <div>
+        <h1>How's your weather today?</h1>
+        <p class="lead">Pick a mood and Lumi will feel it with you. Your check-ins stay on this device.</p>
+        <div class="moods" id="moods" role="group" aria-label="Mood"></div>
+        <label class="lbl" for="energy">Energy: <span id="enval">3</span>/5</label>
+        <input type="range" id="energy" min="1" max="5" value="3">
+        <label class="lbl" for="note">Anything on your mind? (optional)</label>
+        <div class="inrow"><textarea id="note" maxlength="600" placeholder="e.g. exams tomorrow and I can't focus" style="min-height:60px"></textarea><button class="btn ghost icon mic" data-for="note" type="button" aria-label="Speak your note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></div>
+        <div class="row" style="margin-top:14px"><button class="btn" id="saveMood" type="button">Save check-in</button><span class="pill" id="streak">0 day streak</span></div>
+        <div class="tip bg-but" id="mtip" hidden></div>
+        <div class="tip bg-lil" id="reflect" hidden></div>
+      </div>
+      <div class="stage bg-pea" data-stage><div class="bubble"></div></div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><h3 style="margin:0" id="calH">This month</h3><span class="small mut">Colour = mood</span></div>
+      <div class="cal" id="cal"></div>
+    </div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><h3 style="margin:0">Last 14 check-ins</h3><button class="btn ghost sm" id="clrMood" type="button">Clear</button></div>
+      <div id="hist"></div>
+    </div>
+  </div>
+</section>
+
+<!-- CALM -->
+<section class="page" id="p-calm">
+  <div class="band bg-min">
+    <div class="hero">
+      <div>
+        <h1>Breathe with Lumi.</h1>
+        <p class="lead">Lumi grows as you breathe in and shrinks as you breathe out. Just follow along.</p>
+        <div class="row" id="pats" role="group" aria-label="Breathing pattern"></div>
+        <label class="sw need-tts" style="margin-top:8px"><input type="checkbox" id="bVoice"> Lumi talks me through it</label>
+        <div class="card" style="margin-top:12px;text-align:center">
+          <div class="big" id="bword">Ready?</div>
+          <p class="mut" id="bsub" style="margin:8px auto 14px">Pick a pattern, then press start.</p>
+          <button class="btn" id="bgo" type="button">Start</button>
+        </div>
+      </div>
+      <div class="stage bg-sky" data-stage><div class="bubble"></div></div>
+    </div>
+  </div>
+  <div class="three">
+    <div class="card">
+      <h2>Worry shrinker</h2>
+      <p class="mut">Type or say what's worrying you. Lumi helps you see it in a calmer way and gives you one small next step.</p>
+      <div class="inrow"><textarea id="worryIn" maxlength="500" placeholder="e.g. Everyone will laugh at my presentation"></textarea><button class="btn ghost icon mic" data-for="worryIn" type="button" aria-label="Say your worry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></div>
+      <div class="row" style="margin-top:12px"><button class="btn" id="shrink" type="button">Shrink it</button></div>
+      <div id="worryOut"></div>
+    </div>
+    <div class="card">
+      <h2>5-4-3-2-1 grounding</h2>
+      <p class="mut">When your mind is racing, name things around you and tick each one off.</p>
+      <div class="sense" id="sense"></div>
+      <p id="sdone" class="small" style="margin-top:10px"></p>
+    </div>
+    <div class="card">
+      <h2>Need a real person?</h2>
+      <p class="mut">They're free, open 24/7, and calling is totally okay.</p>
+      <div class="help">
+        <div>Kids Helpline<b>1800 55 1800</b><span class="small mut">ages 5–25</span></div>
+        <div>Lifeline<b>13 11 14</b><span class="small mut">crisis support</span></div>
+        <div>Emergency<b>000</b><span class="small mut">if you're in danger</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section class="page" id="p-story">
+  <div class="band bg-lil">
+    <div style="max-width:1240px;margin:0 auto">
+      <h1>Tell it once.</h1>
+      <p class="lead">Tired of repeating your story to every new counsellor, GP or school worker? Write it here once (or let Lumi draft it from your chat). You choose which parts to share.</p>
+    </div>
+  </div>
+  <div class="notice" id="draftNote" hidden>Lumi drafted this from your chat. Read every part carefully and change anything that isn't right before you share it.</div>
+  <div class="two">
+    <div class="card">
+      <h2>Your story</h2>
+      <div id="parts"></div>
+      <div class="row" style="margin-top:16px"><button class="btn" id="mkPass" type="button">Make my Story Pass</button><button class="btn ghost" id="clrStory" type="button">Clear</button></div>
+      <p class="small mut" style="margin-top:10px">Saved only on this device. Nothing is sent anywhere.</p>
+    </div>
+    <div>
+      <div class="pass" id="pass"><h3>Story Pass</h3>Your pass will appear here. Only the parts you switch on will show.</div>
+      <div class="row" style="margin-top:12px"><button class="btn ink" id="cpPass" type="button">Copy pass</button><button class="btn ghost need-dl" id="dlPass" type="button">Download</button><span class="small mut" id="cpMsg" aria-live="polite"></span></div>
+      <div class="tip bg-min">
+        <h3>The big idea: a warm handover</h3>
+        <p style="margin:0">29% of young people in NSW already use AI for mental health support (NSW Youth Week poll 2026). Lumi's idea: when a chat gets serious, your approved Story Pass goes with you to a real counsellor, so you never have to start from zero.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MONEY -->
+<section class="page" id="p-money">
+  <div class="band bg-but">
+    <div style="max-width:1240px;margin:0 auto">
+      <h1>Where does my money go?</h1>
+      <p class="lead">Official inflation is measured for an average household, not for you. Put in your own weekly money and find <b>your</b> personal price rise.</p>
+    </div>
+  </div>
+  <div class="two">
+    <div class="card"><h2>My week</h2><div class="money-in" id="minp"></div></div>
+    <div class="card">
+      <h2>My picture</h2>
+      <div class="donut"><svg id="donut" viewBox="0 0 180 180" width="180" height="180" role="img" aria-label="Spending donut chart"></svg><div class="legend" id="legend"></div></div>
+      <div class="tip bg-but" id="mread"></div>
+      <div class="row" style="margin-top:12px"><button class="btn ink sm need-ai" id="mTips" type="button">Get 3 saving ideas from Lumi</button></div>
+      <div id="mTipsOut"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:22px">
+    <h2>My personal price rise</h2>
+    <p class="mut">If prices went up by these amounts, how much more would <b>your</b> week cost? Slide to try.</p>
+    <div class="two" style="margin-top:6px">
+      <div id="rises"></div>
+      <div style="text-align:center;align-self:center"><div class="big" id="pinf">0%</div><p class="mut" style="margin:6px auto">your personal price rise</p><p id="pinf2" style="margin:0 auto;font-weight:800"></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section class="page" id="p-work">
+  <div class="band bg-pea">
+    <div style="max-width:1240px;margin:0 auto">
+      <h1>Was my trial shift legal?</h1>
+      <p class="lead">Lots of young people get asked to work a "trial" for free. Answer 4 quick questions to check, then keep track of your shifts and pay.</p>
+    </div>
+  </div>
+  <div class="two">
+    <div class="card">
+      <div id="quiz"></div>
+      <div class="tip" id="verdict" hidden></div>
+      <p class="small mut" style="margin-top:12px">Based on Fair Work Ombudsman guidance: an unpaid trial is only okay if it's needed to check your skills, lasts only as long as it takes to show them, and you're directly supervised. This is general information, not legal advice. Fair Work Infoline: <b style="white-space:nowrap">13 13 94</b> · <a href="https://www.fairwork.gov.au/unpaidwork">fairwork.gov.au/unpaidwork</a></p>
+    </div>
+    <div class="card">
+      <h2>Shift diary</h2>
+      <p class="mut">Keep a record of your hours and pay. If something's wrong, a record makes it much easier to get help. Got a payslip? <a href="#lens">Scan it with Lumi Lens</a>.</p>
+      <div class="money-in">
+        <div><label class="lbl" for="sdate">Date</label><input type="text" id="sdate" placeholder="e.g. Sat 22 Nov"></div>
+        <div><label class="lbl" for="shrs">Hours worked</label><input type="number" id="shrs" min="0" step="0.25" inputmode="decimal"></div>
+        <div><label class="lbl" for="spay">Paid ($)</label><input type="number" id="spay" min="0" step="0.01" inputmode="decimal"></div>
+        <div style="align-self:end"><button class="btn" id="addShift" type="button" style="width:100%">Add shift</button></div>
+      </div>
+      <div id="shifts"></div>
+    </div>
+  </div>
+</section>
+
+<!-- VOICE -->
+<section class="page" id="p-voice">
+  <div class="band bg-sky">
+    <div style="max-width:1240px;margin:0 auto">
+      <h1>Got an idea? Get a receipt.</h1>
+      <p class="lead">76% of young people said they feel unheard by government (NSW Youth Summit 2024 report). Lumi's idea: every idea you share gets a tracking code, like a parcel, so you can always see what happened to it.</p>
+    </div>
+  </div>
+  <div class="two">
+    <div class="card">
+      <h2>Share an idea</h2>
+      <label class="lbl" for="ititle">Your idea in one line</label>
+      <input type="text" id="ititle" maxlength="90" placeholder="e.g. Free late-night study spaces in Auburn">
+      <label class="lbl" for="itopic">Topic</label>
+      <select id="itopic"><option>Mental health</option><option>Cost of living</option><option>Housing</option><option>Jobs and work</option><option>School and study</option><option>Transport</option><option>Environment and heat</option><option>Something else</option></select>
+      <label class="lbl" for="iwhy">Why it matters</label>
+      <div class="inrow"><textarea id="iwhy" maxlength="600"></textarea><button class="btn ghost icon mic" data-for="iwhy" type="button" aria-label="Say why it matters"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></div>
+      <div class="row" style="margin-top:14px"><button class="btn ink need-ai" id="polish" type="button">Help me make it stronger</button><button class="btn" id="sendIdea" type="button">Send and get my receipt</button></div>
+      <div id="polishOut"></div>
+      <p class="small mut" style="margin-top:10px">This is a prototype, so your ideas stay on this device. In the real version, they'd go to the NSW Office for Youth.</p>
+    </div>
+    <div class="card"><h2>My receipts</h2><div id="ideas"></div></div>
+  </div>
+</section>
+
+<!-- ME -->
+<section class="page" id="p-me">
+  <div class="band bg-ros">
+    <div class="hero">
+      <div>
+        <h1>Make Lumi yours.</h1>
+        <p class="lead">Name your Lumi, pick its colours and give it a little something to wear. Everything you do on the site grows your garden.</p>
+        <label class="lbl" for="lname">Your Lumi's name</label>
+        <input type="text" id="lname" maxlength="20" placeholder="Lumi">
+        <label class="lbl" for="uname">What should Lumi call you?</label>
+        <input type="text" id="uname" maxlength="20" placeholder="e.g. Rei">
+        <span class="lbl">Colour</span><div class="sw8" id="skins" role="group" aria-label="Lumi colour"></div>
+        <span class="lbl">Wearing</span><div class="chips" id="accs" role="group" aria-label="Accessory"></div>
+      </div>
+      <div class="stage bg-lil" data-stage><div class="bubble"></div></div>
+    </div>
+  </div>
+  <div class="today" id="meStats" style="margin-top:22px"></div>
+  <div class="card" style="margin-top:22px" id="brainCard">
+    <h2>Lumi's brain</h2>
+    <p class="mut">Choose how Lumi thinks. Your choice is saved on this device.</p>
+    <div class="chips" id="brainOpts" role="group" aria-label="Lumi's brain"></div>
+    <div id="brainInfo"></div>
+  </div>
+  <div class="card" style="margin-top:22px">
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">My garden</h2><span class="pill" id="flowerCount">0 flowers</span></div>
+    <p class="mut">Every check-in, breath, chat and idea plants a flower.</p>
+    <svg class="garden" id="garden" viewBox="0 0 800 260" role="img" aria-label="Your garden"></svg>
+  </div>
+  <div class="card" style="margin-top:22px"><h2>Badges</h2><div class="badges" id="badges"></div></div>
+  <div class="card" style="margin-top:22px">
+    <h2>My data</h2>
+    <p class="mut">Everything is stored only in this browser. You can take a copy or wipe it all.</p>
+    <div class="row"><button class="btn ink need-dl" id="dlAll" type="button">Download my data</button><button class="btn ghost" id="wipe" type="button">Delete everything</button></div>
+  </div>
+</section>
+
+</main>
+
+<nav class="tabbar" aria-label="Main" id="tabbar">
+  <a href="#home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1z"/></svg>Home</a>
+  <a href="#talk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>Talk</a>
+  <a href="#lens"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Lens</a>
+  <a href="#checkin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5q3.5 3 7 0"/><circle cx="9" cy="10" r=".8" fill="currentColor"/><circle cx="15" cy="10" r=".8" fill="currentColor"/></svg>Check-in</a>
+  <button type="button" id="moreBtn" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>More</button>
+</nav>
+<div class="sheet" id="sheet" hidden role="dialog" aria-label="All pages"><div><h3 style="text-align:center">Where to?</h3><nav id="sheetNav"></nav></div></div>
+
+<div class="cam" id="cam" hidden role="dialog" aria-label="Camera"><div><video id="camV" playsinline muted autoplay></video><div class="row" style="justify-content:center;margin-top:12px"><button class="btn" id="camSnap" type="button">Snap</button><button class="btn ghost" id="camFlip" type="button">Flip camera</button><button class="btn ghost" id="camClose" type="button">Close</button></div><p class="small" style="color:#fff;text-align:center;margin:10px auto 0">Fit the whole page in the frame, with good light.</p></div></div>
+<footer><div class="wrap">
+  <p><b>Lumi</b> is a prototype idea from a young person in Auburn, NSW. It is not a crisis service or medical advice. If you're not safe right now, call <b>000</b>. For support any time: Kids Helpline <b style="white-space:nowrap">1800 55 1800</b>, Lifeline <b style="white-space:nowrap">13 11 14</b>.</p>
+  <p class="small">Facts used: NSW Office for Youth, Youth Week 2026 polling report · NSW Youth Summit 2024 report · Fair Work Ombudsman guidance on unpaid trials. Your check-ins, story, money and shifts stay in this browser. With Cloud AI, chat messages and photos are sent to the Lumi server only when you use AI features. On-device AI keeps everything on your device.</p>
+</div></footer>
+
+<script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>{
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store={get(k,d){try{const v=localStorage.getItem('lumi-'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('lumi-'+k,JSON.stringify(v))}catch(e){}}};
+const isoDay=(d=new Date())=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+function toast(t){const o=$('.toast');if(o)o.remove();const d=document.createElement('div');d.className='toast';d.setAttribute('role','status');d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),3200)}
+function confetti(el){const r=el.getBoundingClientRect();const cols=['#ff5d73','#ffd166','#7bdcb5','#a78bfa','#60a5fa'];for(let i=0;i<28;i++){const s=document.createElement('span');s.className='confetti';s.style.left=(r.left+r.width/2)+'px';s.style.top=(r.top+r.height/2)+'px';s.style.background=cols[i%5];s.style.setProperty('--x',(Math.random()*280-140)+'px');s.style.setProperty('--y',(Math.random()*-240-40)+'px');s.style.setProperty('--r',(Math.random()*720-360)+'deg');document.body.appendChild(s);setTimeout(()=>s.remove(),1200)}}
+function hearts(x,y){for(let i=0;i<6;i++){const h=document.createElement('span');h.className='heart';h.innerHTML='<svg viewBox="0 0 24 24"><path fill="#ff5d73" d="M12 21s-7.5-4.6-9.6-9.2C.8 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.8 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg>';h.style.left=(x-11)+'px';h.style.top=(y-11)+'px';h.style.setProperty('--x',(Math.random()*120-60)+'px');h.style.animationDelay=(i*.06)+'s';document.body.appendChild(h);setTimeout(()=>h.remove(),1500)}}
+
+/* ---------- stats + badges ---------- */
+const stats=Object.assign({checkins:0,breaths:0,grounded:0,chats:0,passes:0,money:0,quiz:0,ideas:0,scans:0,worries:0},store.get('stats',{}));
+function bump(k,n=1){stats[k]=(stats[k]||0)+n;store.set('stats',stats);drawToday();drawMe()}
+const BADGES=[
+ ['First feeling','First check-in',s=>s.checkins>=1,'#cfe6ff'],
+ ['Week of me','7 check-ins',s=>s.checkins>=7,'#cfe6ff'],
+ ['Deep breather','3 breathing rounds',s=>s.breaths>=3,'#c9f2e1'],
+ ['Grounded','Finish 5-4-3-2-1',s=>s.grounded>=1,'#c9f2e1'],
+ ['Worry tamer','Shrink a worry',s=>s.worries>=1,'#c9f2e1'],
+ ['Chatterbox','5 messages to Lumi',s=>s.chats>=5,'#ffd1dc'],
+ ['Storyteller','Make a Story Pass',s=>s.passes>=1,'#d9ceff'],
+ ['Lens explorer','Scan something',s=>s.scans>=1,'#fff1b0'],
+ ['Money boss','Plan your week',s=>s.money>=1,'#fff1b0'],
+ ['Know your rights','Finish the trial check',s=>s.quiz>=1,'#ffd9c7'],
+ ['Youth voice','Share an idea',s=>s.ideas>=1,'#cfe6ff']];
+const BSVG=c=>`<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="${c}"/><path d="M24 11l3.8 7.7 8.5 1.2-6.2 6 1.5 8.4L24 30.3l-7.6 4 1.5-8.4-6.2-6 8.5-1.2z" fill="#2b2341"/></svg>`;
+
+/* ---------- moods + skins ---------- */
+const MOODS={
+ sunny:{name:'Sunny',bg:'#ffe27a',c1:'#fff3b0',c2:'#ff9f6b',amp:.05,spd:1.3,ex:'happy',say:'Yay! Love that for you.',tip:'Nice! Write down one thing that made today good. It helps on harder days.'},
+ calm:{name:'Calm',bg:'#bdf0dc',c1:'#d8fff0',c2:'#5fc9ad',amp:.03,spd:.6,ex:'happy',say:'Ahh, peaceful.',tip:'Calm days are great for planning. What is one small thing you want to do this week?'},
+ meh:{name:'Meh',bg:'#ddd8ec',c1:'#ecebf3',c2:'#a49cc0',amp:.03,spd:.5,ex:'flat',say:'Meh days happen. I\'m here.',tip:'Meh is okay. A short walk outside or a song you love can shift things a little.'},
+ stormy:{name:'Stormy',bg:'#a9b3ff',c1:'#c7ceff',c2:'#5458cf',amp:.13,spd:2.2,ex:'sad',say:'That sounds heavy. Want to breathe with me?',tip:'Big feelings are allowed. Try the Calm page, talk it out with Lumi, or call Kids Helpline on 1800 55 1800.'},
+ anxious:{name:'Anxious',bg:'#ffc2cf',c1:'#ffdde5',c2:'#ff5d73',amp:.1,spd:3.2,ex:'surprised',say:'Let\'s slow down together.',tip:'Anxiety makes things feel bigger than they are. Try the worry shrinker or 5-4-3-2-1 on the Calm page.'},
+ tired:{name:'Tired',bg:'#cfc6ff',c1:'#e2dcff',c2:'#8574d6',amp:.02,spd:.3,ex:'sleepy',say:'Sleepy… rest counts too.',tip:'Rest counts. Try putting your phone away 30 minutes before bed tonight.'}};
+const MFACE={happy:'<path d="M9 17q6 5 12 0" stroke="#2b2341" stroke-width="2.4" fill="none" stroke-linecap="round"/>',flat:'<path d="M10 18h10" stroke="#2b2341" stroke-width="2.4" stroke-linecap="round"/>',sad:'<path d="M9 20q6-5 12 0" stroke="#2b2341" stroke-width="2.4" fill="none" stroke-linecap="round"/>',surprised:'<circle cx="15" cy="18.5" r="2.6" fill="none" stroke="#2b2341" stroke-width="2.2"/>',sleepy:'<path d="M10 18h10" stroke="#2b2341" stroke-width="2.4" stroke-linecap="round"/>'};
+const moodSvg=m=>`<svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="14" fill="#fff" opacity=".85"/>${m.ex==='sleepy'?'<path d="M8 12h4M18 12h4" stroke="#2b2341" stroke-width="2.2" stroke-linecap="round"/>':'<circle cx="10.5" cy="12" r="1.8" fill="#2b2341"/><circle cx="19.5" cy="12" r="1.8" fill="#2b2341"/>'}${MFACE[m.ex]}</svg>`;
+const SKINS=[['Bubblegum','#e7dcff','#ff9fb1'],['Mint','#d8fff0','#5fc9ad'],['Sunset','#fff3b0','#ff9f6b'],['Ocean','#d6ecff','#5b8cff'],['Strawberry','#ffdde5','#ff5d73'],['Grape','#e2dcff','#8574d6'],['Peach','#ffe7d6','#ffad7a']];
+const ACCS=[['none','Nothing'],['hat','Party hat'],['phones','Headphones'],['bow','Bow'],['crown','Flower crown']];
+const me=Object.assign({lname:'',uname:'',skin:0,acc:'none'},store.get('me',{}));
+const lumiName=()=>me.lname||'Lumi';
+
+/* ---------- 3D LUMI ---------- */
+let lumi=null;
+try{
+ if(!window.THREE)throw 0;
+ const T=THREE,ren=new T.WebGLRenderer({antialias:true,alpha:true});
+ ren.setPixelRatio(Math.min(devicePixelRatio||1,2));
+ const scene=new T.Scene(),cam=new T.PerspectiveCamera(35,1,.1,50);cam.position.set(0,.1,6);
+ const U={t:{value:0},amp:{value:.05},c1:{value:new T.Color(SKINS[0][1])},c2:{value:new T.Color(SKINS[0][2])}};
+ const mat=new T.ShaderMaterial({uniforms:U,
+  vertexShader:`uniform float t,amp;varying vec3 vN;varying vec3 vP;varying float vY;
+   void main(){vec3 p=position;float d=sin(p.x*3.+t)*sin(p.y*3.5+t*1.2)*sin(p.z*3.+t*.8)+.5*sin(p.y*6.+t*1.7);
+   vec3 q=p*(1.+amp*d);vY=p.y;vN=normalize(normalMatrix*normal);vec4 mv=modelViewMatrix*vec4(q,1.);vP=mv.xyz;gl_Position=projectionMatrix*mv;}`,
+  fragmentShader:`uniform vec3 c1,c2;varying vec3 vN;varying vec3 vP;varying float vY;
+   void main(){vec3 n=normalize(vN);vec3 V=normalize(-vP);vec3 L=normalize(vec3(.5,.9,.7));
+   vec3 col=mix(c2,c1,smoothstep(-.8,.9,vY));float df=max(dot(n,L),0.);float fr=pow(1.-max(dot(n,V),0.),2.2);
+   float sp=pow(max(dot(reflect(-L,n),V),0.),30.);float sss=pow(max(dot(n,normalize(vec3(-.6,-.3,.4))),0.),2.)*.12;
+   col=col*(.74+.36*df)+fr*.3+sp*.5+sss;gl_FragColor=vec4(col,1.);}`});
+ const g=new T.Group();scene.add(g);
+ const body=new T.Mesh(new T.SphereGeometry(1,96,96),mat);g.add(body);
+ const ink=new T.MeshBasicMaterial({color:0x2b2341}),white=new T.MeshBasicMaterial({color:0xffffff}),pink=new T.MeshBasicMaterial({color:0xff7a93,transparent:true,opacity:.6});
+ const face=new T.Group();g.add(face);
+ const eyes=[-1,1].map(s=>{const e=new T.Group();const ball=new T.Mesh(new T.SphereGeometry(.115,24,24),ink);ball.scale.z=.5;const hi=new T.Mesh(new T.SphereGeometry(.036,12,12),white);hi.position.set(.035,.045,.06);const hi2=new T.Mesh(new T.SphereGeometry(.016,8,8),white);hi2.position.set(-.03,-.03,.06);e.add(ball,hi,hi2);e.position.set(s*.3,.16,1.0);face.add(e);return e});
+ const cheeks=[-1,1].map(s=>{const c=new T.Mesh(new T.SphereGeometry(.09,20,20),pink);c.scale.set(1.35,.7,.3);c.position.set(s*.48,-.06,.88);face.add(c);return c});
+ const arc=new T.Mesh(new T.TorusGeometry(.1,.028,10,30,Math.PI),ink);arc.position.set(0,-.08,1.04);face.add(arc);
+ const ring=new T.Mesh(new T.TorusGeometry(.07,.026,10,30),ink);ring.position.set(0,-.1,1.04);face.add(ring);
+ const arms=[-1,1].map(s=>{const a=new T.Mesh(new T.SphereGeometry(.2,24,24),mat);a.scale.set(.8,1.1,.8);a.position.set(s*1.0,-.35,.1);g.add(a);return a});
+ // accessories
+ const acc={};
+ {const h=new T.Group();const cone=new T.Mesh(new T.ConeGeometry(.32,.7,32),new T.MeshBasicMaterial({color:0xffd166}));cone.position.y=.35;const stripe=new T.Mesh(new T.TorusGeometry(.2,.035,8,30),new T.MeshBasicMaterial({color:0xff5d73}));stripe.rotation.x=Math.PI/2;stripe.position.y=.25;const pom=new T.Mesh(new T.SphereGeometry(.09,16,16),new T.MeshBasicMaterial({color:0xff5d73}));pom.position.y=.72;h.add(cone,stripe,pom);h.position.set(.18,.9,0);h.rotation.z=-.25;acc.hat=h}
+ {const h=new T.Group();const band=new T.Mesh(new T.TorusGeometry(1.06,.06,12,48,Math.PI),new T.MeshBasicMaterial({color:0x2b2341}));const cupM=new T.MeshBasicMaterial({color:0x7bdcb5});[-1,1].forEach(s=>{const c=new T.Mesh(new T.CylinderGeometry(.22,.22,.18,24),cupM);c.rotation.z=Math.PI/2;c.position.set(s*1.06,0,0);h.add(c)});h.add(band);h.position.y=.05;acc.phones=h}
+ {const h=new T.Group();const bm=new T.MeshBasicMaterial({color:0xff5d73});[-1,1].forEach(s=>{const c=new T.Mesh(new T.ConeGeometry(.16,.3,24),bm);c.rotation.z=s*Math.PI/2;c.position.x=s*.16;h.add(c)});const k=new T.Mesh(new T.SphereGeometry(.07,12,12),bm);h.add(k);h.position.set(.55,.8,.35);h.rotation.z=-.4;acc.bow=h}
+ {const h=new T.Group();const cols=[0xffd166,0xff8fa3,0xa78bfa,0x7bdcb5,0x60a5fa,0xff5d73,0xffffff];for(let i=0;i<9;i++){const a=i/9*Math.PI*2;const f=new T.Mesh(new T.SphereGeometry(.1,14,14),new T.MeshBasicMaterial({color:cols[i%7]}));f.position.set(Math.cos(a)*.62,0,Math.sin(a)*.62);h.add(f)}h.position.y=.8;h.rotation.x=.25;acc.crown=h}
+ Object.values(acc).forEach(a=>{a.visible=false;g.add(a)});
+ // shadow
+ const sc=document.createElement('canvas');sc.width=sc.height=128;const sx=sc.getContext('2d');const gr=sx.createRadialGradient(64,64,4,64,64,64);gr.addColorStop(0,'rgba(43,35,65,.35)');gr.addColorStop(1,'rgba(43,35,65,0)');sx.fillStyle=gr;sx.fillRect(0,0,128,128);
+ const shadow=new T.Mesh(new T.PlaneGeometry(2.4,2.4),new T.MeshBasicMaterial({map:new T.CanvasTexture(sc),transparent:true,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.position.y=-1.3;scene.add(shadow);
+ const orbs=[];const ocols=[0xffd166,0x7bdcb5,0xa78bfa,0xff8fa3,0x60a5fa];
+ for(let i=0;i<16;i++){const m=new T.Mesh(i%3?new T.IcosahedronGeometry(.05+Math.random()*.07,1):new T.OctahedronGeometry(.07),new T.MeshBasicMaterial({color:ocols[i%5]}));m.userData={r:1.7+Math.random()*.7,a:Math.random()*6.28,s:.2+Math.random()*.4,y:(Math.random()-.5)*2.2};scene.add(m);orbs.push(m)}
+ const st={tc1:new T.Color(SKINS[0][1]),tc2:new T.Color(SKINS[0][2]),amp:.05,spd:1,ex:'happy',mx:0,my:0,jump:0,jv:0,breath:null,blink:0,next:2,talk:false,wave:0,spinV:0,drag:null,think:false};
+ const host={el:null};
+ const size=()=>{if(!host.el)return;const w=host.el.clientWidth,h=host.el.clientHeight;if(!w||!h)return;ren.setSize(w,h,false);cam.aspect=w/h;cam.position.z=w/h<1.05?7.2:6.1;cam.updateProjectionMatrix()};
+ const ro=new ResizeObserver(size);
+ addEventListener('pointermove',e=>{st.mx=e.clientX/innerWidth*2-1;st.my=e.clientY/innerHeight*2-1;if(st.drag!==null){st.spinV=(e.clientX-st.drag)*.004;st.drag=e.clientX}});
+ addEventListener('pointerup',()=>{st.drag=null});
+ ren.domElement.addEventListener('pointerdown',e=>{st.drag=e.clientX;st.jv=.09;st.wave=1.2;hearts(e.clientX,e.clientY);say(pickLine())});
+ const clk=new T.Clock();let t=0,spin=0;
+ const loop=()=>{requestAnimationFrame(loop);if(!host.el||document.hidden)return;const dt=Math.min(clk.getDelta(),.05);const et=clk.elapsedTime;t+=dt*st.spd*(st.think?2.2:1);U.t.value=t;
+  U.c1.value.lerp(st.tc1,.06);U.c2.value.lerp(st.tc2,.06);U.amp.value+=((st.think?.09:st.amp)-U.amp.value)*.06;
+  spin+=st.spinV;st.spinV*=.93;
+  g.rotation.y+=((st.mx*.5+spin)-g.rotation.y)*.08;g.rotation.x+=((st.my*.28)-g.rotation.x)*.06;
+  st.jv-=.006;st.jump=Math.max(0,st.jump+st.jv);if(st.jump===0)st.jv=0;
+  let s=1+Math.sin(et*2)*.015;if(st.breath!==null)s=.8+st.breath*.4;
+  g.scale.setScalar(s);g.position.y=st.jump*3+Math.sin(et*1.6)*.06;
+  body.scale.set(1+st.jump*.4,1-st.jump*.5,1);
+  shadow.scale.setScalar(Math.max(.4,1-st.jump*1.6)*s);shadow.material.opacity=Math.max(.3,1-st.jump*2);
+  st.wave=Math.max(0,st.wave-dt);arms.forEach((a,i)=>{const w=st.wave>0?Math.sin(et*18+i)*.25:0;a.position.y=-.35+Math.sin(et*2+i)*.03+(i?w:0);a.position.x=(i?1:-1)*(1.0+(i&&st.wave>0?.06:0))});
+  st.next-=dt;if(st.next<0){st.blink=.14;st.next=2+Math.random()*3}
+  const ex=st.ex;let lid=ex==='sleepy'?.3:ex==='surprised'?1.2:1;if(st.blink>0){st.blink-=dt;lid=.08}
+  eyes.forEach(e=>{e.scale.y+=(lid-e.scale.y)*.35;const lx=st.think?.05:st.mx*.04,ly=st.think?.05:-st.my*.03;e.position.x+=((e.position.x>0?.3:-.3)+lx-e.position.x)*.2;e.position.y+=(.16+ly-e.position.y)*.2});
+  cheeks.forEach(c=>c.material.opacity=ex==='love'?.95:.6);
+  const tk=st.talk?(.5+.5*Math.abs(Math.sin(et*14))):0;
+  if(st.talk){arc.visible=false;ring.visible=true;ring.scale.set(1,.5+tk*.9,1)}
+  else if(ex==='surprised'){arc.visible=false;ring.visible=true;ring.scale.set(1,1,1)}
+  else{arc.visible=true;ring.visible=false;const sad=ex==='sad';arc.rotation.z=sad?0:Math.PI;arc.position.y=sad?-.16:-.08;arc.scale.y=(ex==='flat'||ex==='sleepy')?.18:1}
+  orbs.forEach(o=>{const u=o.userData;u.a+=dt*u.s*(st.think?3:1);o.position.set(Math.cos(u.a)*u.r,u.y+Math.sin(u.a*2)*.15,Math.sin(u.a)*u.r*.6-.3);o.rotation.x+=dt;o.rotation.y+=dt*.7});
+  ren.render(scene,cam)};
+ loop();
+ lumi={
+  mount(el){if(host.el)ro.unobserve(host.el);host.el=el;el.prepend(ren.domElement);ro.observe(el);size()},
+  colors(c1,c2,amp=.05,spd=1){st.tc1.set(c1);st.tc2.set(c2);st.amp=amp;st.spd=spd},
+  expr(e){st.ex=e||'happy'},think(v){st.think=!!v},talking(v){st.talk=!!v},
+  breath(v){st.breath=v},jump(){st.jv=.09;st.wave=1},
+  acc(name){Object.entries(acc).forEach(([k,a])=>a.visible=k===name)}
+ };
+}catch(e){lumi=null}
+const LINES=()=>[`Hi${me.uname?' '+me.uname:''}! *wobble*`,'You\'re doing better than you think.','Drink some water? I\'ll wait.','Your feelings are valid.','Boop!','One step at a time.','Proud of you for showing up.','Wheee!'];
+function pickLine(){const l=LINES();return l[Math.floor(Math.random()*l.length)]}
+let curStage=null;
+function say(txt){if(!curStage)return;const b=curStage.querySelector('.bubble');if(!b)return;b.textContent=txt;b.classList.add('show');clearTimeout(say.t);say.t=setTimeout(()=>b.classList.remove('show'),2800)}
+function skinLumi(){if(!lumi)return;const s=SKINS[me.skin]||SKINS[0];lumi.colors(s[1],s[2]);lumi.expr('happy');lumi.acc(me.acc)}
+function mountStage(page){const s=page.querySelector('[data-stage]');curStage=s;if(!s)return;if(lumi)lumi.mount(s);else if(!s.querySelector('.fallback')){const f=document.createElement('div');f.className='fallback';s.prepend(f);s.addEventListener('click',e=>{hearts(e.clientX,e.clientY);say(pickLine())})}}
+
+/* ---------- independent brain, voice, camera, downloads ---------- */
+const CFG=Object.assign({apiUrl:'',deviceModel:'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',webllm:'https://esm.run/@mlc-ai/web-llm@0.2.86',tesseract:'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js'},window.LUMI_CONFIG||{});
+if(!me.brain)me.brain='auto';
+const AI={engine:null,loading:false,progress:null};
+const hasGPU=!!navigator.gpu;
+const hasCloud=()=>!!CFG.apiUrl&&me.brain==='auto';
+function aiReady(){if(me.brain==='basic')return false;if(me.brain==='device')return !!AI.engine;return hasCloud()||!!AI.engine}
+const SRC=window.SpeechRecognition||window.webkitSpeechRecognition;
+const CAP={tts:'speechSynthesis' in window,dict:!!SRC,cam:!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)};
+document.body.classList.toggle('has-tts',CAP.tts);document.body.classList.toggle('has-mic',CAP.dict);document.body.classList.toggle('has-cam',CAP.cam);document.body.classList.add('has-dl');
+function refreshBrain(){document.body.classList.toggle('has-ai',aiReady());const p=$('#aiPill');if(p)p.textContent=hasCloud()?'Cloud AI on':'On-device AI on';drawBrain()}
+const b64=blob=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=()=>rej({code:'read'});r.readAsDataURL(blob)});
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej({code:'load'});document.head.appendChild(s)})}
+let ocrLoad=null;
+async function ocr(blob){if(!window.Tesseract){ocrLoad=ocrLoad||loadScript(CFG.tesseract);await ocrLoad}const r=await window.Tesseract.recognize(blob,'eng');return String(r&&r.data&&r.data.text||'').trim()}
+async function askNow(prompt,opts){
+ if(me.brain==='basic')throw{code:'no_ai'};
+ if(hasCloud()){
+  const images=[];for(const b of (opts.images||[]))images.push({media_type:b.type||'image/jpeg',data:await b64(b)});
+  let r;try{r=await fetch(CFG.apiUrl,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({prompt,images,max_tokens:opts.max||700})})}catch(e){throw{code:'offline'}}
+  if(r.status===429)throw{code:'rate_limited'};if(!r.ok)throw{code:'server'};
+  const d=await r.json().catch(()=>({}));const text=String(d.text||'');if(opts.onText)opts.onText({text});return{text}}
+ if(AI.engine){
+  let p=prompt;
+  if(opts.images&&opts.images.length){if(opts.onStatus)opts.onStatus('Reading the words in your photo…');let t='';try{t=await ocr(opts.images[0])}catch(e){throw{code:'load'}}if(t.length<8)throw{code:'no_text'};
+   p+='\n\nYou cannot see the photo itself. Here is the text that was read from it (it may contain reading mistakes):\n"""\n'+t.slice(0,5000)+'\n"""';if(opts.onStatus)opts.onStatus('Lumi is thinking…')}
+  const chunks=await AI.engine.chat.completions.create({messages:[{role:'user',content:p}],stream:true,temperature:.6,max_tokens:opts.max||600});
+  let text='';for await(const c of chunks){text+=(c.choices&&c.choices[0]&&c.choices[0].delta&&c.choices[0].delta.content)||'';if(opts.onText)opts.onText({text})}
+  return{text}}
+ throw{code:'no_ai'}}
+let askQ=Promise.resolve();
+function ask(prompt,opts){const p=askQ.then(()=>askNow(prompt,opts||{}));askQ=p.catch(()=>{});return p}
+function aiErr(e){const c=e&&e.code;return c==='rate_limited'?'Lumi needs a little breather. Try again in a few minutes.':c==='no_ai'?'Lumi\'s AI brain is off. Turn it on in My Lumi, under "Lumi\'s brain".':c==='offline'?'You seem to be offline. Check your internet and try again.':c==='server'?'Lumi\'s server had a hiccup. Try again?':c==='no_text'?'Lumi couldn\'t find any words in that photo. Try a sharper, well-lit photo.':c==='load'?'A tool Lumi needs didn\'t load. Check your internet and try again.':'Hmm, something went wrong. Try again?'}
+function parseJSON(t){const m=String(t||'').match(/\{[\s\S]*\}/);if(!m)return null;try{return JSON.parse(m[0])}catch(e){return null}}
+async function loadDevice(){if(AI.engine||AI.loading)return;
+ if(!hasGPU){toast('This browser can\'t run on-device AI. Try Chrome or Edge on a newer computer or Android phone.');return}
+ AI.loading=true;AI.progress=null;drawBrain();
+ try{const webllm=await import(CFG.webllm);
+  AI.engine=await webllm.CreateMLCEngine(CFG.deviceModel,{initProgressCallback:p=>{AI.progress=p;drawBrain()}});
+  me.deviceOn=true;store.set('me',me);toast('On-device AI is ready!');if(lumi)lumi.jump()}
+ catch(e){AI.engine=null;toast('On-device AI couldn\'t start on this device.')}
+ AI.loading=false;refreshBrain()}
+function drawBrain(){const o=$('#brainOpts');if(!o)return;
+ const opts=[['auto','Best available'],['device','On-device AI only'],['basic','No AI']];
+ o.innerHTML=opts.map(x=>`<button type="button" class="chip" data-b="${x[0]}" aria-pressed="${me.brain===x[0]}">${x[1]}</button>`).join('');
+ o.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{me.brain=b.dataset.b;store.set('me',me);if(me.brain!=='basic'&&!hasCloud()&&!AI.engine&&hasGPU&&me.brain==='device')loadDevice();refreshBrain()}));
+ const cur=!aiReady()?'Simple built-in replies (no AI)':hasCloud()?'Cloud AI: the smartest. It reads photos and translates well.':'On-device AI: free and private, running on your device.';
+ const pr=AI.progress;
+ $('#brainInfo').innerHTML=`<p><b>Right now:</b> ${cur}</p><div class="res">`+
+  `<div><b>Cloud AI</b>${CFG.apiUrl?'Switched on for this website. Your messages and photos go to the Lumi server, which asks Claude, then come straight back. Nothing is stored.':'Not switched on for this website yet. The site owner can turn it on (see the README on GitHub).'}</div>`+
+  `<div><b>On-device AI</b>${!hasGPU?'This browser can\'t run it. It needs WebGPU: try Chrome or Edge on a newer computer or Android phone.':AI.engine?'Ready. Everything stays on this device.':AI.loading?`Downloading… ${esc(pr&&pr.text||'starting')}<progress max="1" value="${pr&&pr.progress||0}" style="width:100%;margin-top:6px"></progress>`:'Free and private: nothing leaves your device. It\'s a one-time download of about 1 GB, so use Wi-Fi. It\'s less smart than Cloud AI and reads photos in English only.<br><button type="button" class="btn ink sm" id="devLoad" style="margin-top:8px">Download on-device AI</button>'}</div>`+
+  `<div><b>No AI</b>Lumi uses simple built-in replies. Everything else still works.</div></div>`;
+ const dl=$('#devLoad');if(dl)dl.addEventListener('click',loadDevice)}
+/* speech to text (browser) */
+let rec=null,micB=null;
+function stopMic(){if(rec){try{rec.stop()}catch(e){}}}
+$$('.mic').forEach(b=>b.addEventListener('click',()=>{if(!SRC)return;if(micB===b){stopMic();return}stopMic();
+ const t=$('#'+b.dataset.for);let r;try{r=new SRC()}catch(e){toast('The mic isn\'t available here.');return}
+ rec=r;micB=b;r.lang='en-AU';r.interimResults=true;r.continuous=true;
+ t.dataset.ph=t.placeholder;t.placeholder='Listening… tap the mic again to stop';b.classList.add('rec');
+ const base=t.value;let fin='';
+ r.onresult=ev=>{let interim='';for(let i=ev.resultIndex;i<ev.results.length;i++){const x=ev.results[i];if(x.isFinal)fin+=x[0].transcript;else interim+=x[0].transcript}t.value=(base&&!/\s$/.test(base)?base+' ':base)+fin+interim;t.dispatchEvent(new Event('input',{bubbles:true}))};
+ r.onerror=ev=>{if(ev.error==='not-allowed'||ev.error==='service-not-allowed')toast('The mic is blocked. Allow it in your browser, or just type.');else if(ev.error!=='no-speech'&&ev.error!=='aborted')toast('The mic stopped. Try again?')};
+ r.onend=()=>{b.classList.remove('rec');t.placeholder=t.dataset.ph||'';if(rec===r){rec=null;micB=null}};
+ try{r.start()}catch(e){r.onend()}}));
+/* text to speech (browser) */
+let voices=[];
+function fillVoices(){try{voices=speechSynthesis.getVoices()}catch(e){voices=[]}const s=$('#voiceSel');if(!s)return;const en=voices.filter(v=>/^en/i.test(v.lang));
+ s.innerHTML='<option value="">Default voice</option>'+en.map(v=>`<option value="${esc(v.name)}">${esc(v.name)} (${esc(v.lang)})</option>`).join('');s.value=me.voice&&en.some(v=>v.name===me.voice)?me.voice:''}
+if(CAP.tts){fillVoices();try{speechSynthesis.addEventListener('voiceschanged',fillVoices)}catch(e){speechSynthesis.onvoiceschanged=fillVoices}}
+function speak(text,opts){opts=opts||{};if(!CAP.tts||!text)return Promise.resolve();return new Promise(res=>{try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(text).slice(0,3000));const lang=opts.language;let v=null;
+ if(lang&&lang!=='en'){const L=lang.toLowerCase();v=voices.find(x=>x.lang.toLowerCase().replace('_','-').startsWith(L))||voices.find(x=>x.lang.toLowerCase().startsWith(L.split('-')[0]));u.lang=lang;if(!v)toast('Your device might not have a voice for this language.')}
+ else v=voices.find(x=>x.name===me.voice)||null;
+ if(v){u.voice=v;u.lang=v.lang}else if(!lang||lang==='en')u.lang='en-AU';
+ u.rate=opts.rate||1;u.pitch=1.1;u.onstart=()=>{if(lumi)lumi.talking(true)};u.onend=u.onerror=()=>{if(lumi)lumi.talking(false);res()};speechSynthesis.speak(u)}catch(e){res()}})}
+function stopSpeak(){if(CAP.tts)try{speechSynthesis.cancel()}catch(e){}if(lumi)lumi.talking(false)}
+/* downloads */
+function saveFile(filename,text){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:filename.endsWith('.json')?'application/json':'text/plain'}));a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast('Downloaded!')}catch(e){toast('Download failed.')}}
+/* live camera */
+let camStream=null,camFace='environment';
+async function camStart(){try{camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:camFace,width:{ideal:1920},height:{ideal:1080}},audio:false});const v=$('#camV');v.srcObject=camStream;$('#cam').hidden=false;await v.play().catch(()=>{})}catch(e){camStop();toast('The camera isn\'t available. You can choose a photo instead.')}}
+function camStop(){if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null}$('#cam').hidden=true}
+$('#camOpen').addEventListener('click',camStart);$('#camClose').addEventListener('click',camStop);
+$('#camFlip').addEventListener('click',()=>{camFace=camFace==='environment'?'user':'environment';camStop();camStart()});
+$('#camSnap').addEventListener('click',()=>{const v=$('#camV');if(!v.videoWidth){toast('The camera is still starting…');return}const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);c.toBlob(b=>{camStop();if(b)loadImg(new File([b],'photo.jpg',{type:'image/jpeg'}))},'image/jpeg',.92)});
+
+/* ---------- router + nav ---------- */
+const PAGES=[['home','Home','f3'],['talk','Talk','f6'],['lens','Lens','f4'],['checkin','Check-in','f1'],['calm','Calm','f2'],['story','Tell it once','f3'],['money','My money','f4'],['work','Work rights','f5'],['voice','My voice','f1'],['me','My Lumi','f6']];
+$('#topnav').innerHTML=PAGES.map(p=>`<a href="#${p[0]}">${p[1]}</a>`).join('');
+$('#sheetNav').innerHTML=PAGES.map(p=>`<a href="#${p[0]}" class="${p[2]}" style="color:#2b2341">${p[1]}</a>`).join('');
+const sheet=$('#sheet');
+$('#moreBtn').addEventListener('click',()=>{sheet.hidden=false});
+sheet.addEventListener('click',e=>{if(e.target===sheet||e.target.closest('a'))sheet.hidden=true});
+addEventListener('keydown',e=>{if(e.key==='Escape')sheet.hidden=true});
+let curPage='home';
+function route(){const h=location.hash.slice(1);const id=PAGES.some(p=>p[0]===h)?h:'home';curPage=id;
+ $$('.page').forEach(p=>p.classList.toggle('on',p.id==='p-'+id));
+ $$('#topnav a,#tabbar a').forEach(a=>{if(a.getAttribute('href')==='#'+id)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+ const mb=$('#moreBtn');if(['home','talk','lens','checkin'].includes(id))mb.removeAttribute('aria-current');else mb.setAttribute('aria-current','page');
+ const cur=$('#topnav a[aria-current]');if(cur)cur.scrollIntoView({block:'nearest',inline:'center'});
+ mountStage($('#p-'+id));
+ if(id!=='calm')stopBreath();
+ skinLumi();
+ if(id==='checkin'&&selMood&&lumi){const m=MOODS[selMood];lumi.colors(m.c1,m.c2,m.amp,m.spd);lumi.expr(m.ex)}
+ if(id==='calm'&&lumi){lumi.colors('#d8fff0','#5fc9ad',.03,.6)}
+ scrollTo({top:0});
+ if(id==='home')setTimeout(()=>say(`Hi${me.uname?' '+me.uname:''}! I'm ${lumiName()}.`),500);
+ if(id==='me')drawMe()}
+addEventListener('hashchange',route);
+
+/* ---------- HOME ---------- */
+const ICON={
+ talk:'<svg viewBox="0 0 48 48"><path d="M8 10h32a4 4 0 0 1 4 4v16a4 4 0 0 1-4 4H22l-9 7v-7H8a4 4 0 0 1-4-4V14a4 4 0 0 1 4-4z" fill="#fff" opacity=".9"/><circle cx="17" cy="22" r="2.6" fill="#2b2341"/><circle cx="24" cy="22" r="2.6" fill="#2b2341"/><circle cx="31" cy="22" r="2.6" fill="#2b2341"/></svg>',
+ lens:'<svg viewBox="0 0 48 48"><path d="M6 15h8l3-5h14l3 5h8v24H6z" fill="#fff" opacity=".9"/><circle cx="24" cy="27" r="7" fill="none" stroke="#2b2341" stroke-width="3"/></svg>',
+ checkin:'<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="19" fill="#fff" opacity=".9"/><circle cx="18" cy="21" r="2.6" fill="#2b2341"/><circle cx="30" cy="21" r="2.6" fill="#2b2341"/><path d="M16 29q8 7 16 0" stroke="#2b2341" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>',
+ calm:'<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="none" stroke="#2b2341" stroke-width="2.5" opacity=".3"/><circle cx="24" cy="24" r="13" fill="#fff" opacity=".9"/><circle cx="24" cy="24" r="5" fill="#2b2341"/></svg>',
+ story:'<svg viewBox="0 0 48 48"><rect x="10" y="6" width="28" height="36" rx="7" fill="#fff" opacity=".9"/><path d="M17 17h14M17 24h14M17 31h9" stroke="#2b2341" stroke-width="2.6" stroke-linecap="round"/></svg>',
+ money:'<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="#fff" opacity=".9"/><path d="M24 24V6a18 18 0 0 1 18 18z" fill="#ff5d73"/></svg>',
+ work:'<svg viewBox="0 0 48 48"><rect x="7" y="15" width="34" height="24" rx="7" fill="#fff" opacity=".9"/><path d="M17 15v-3a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v3M16 27l6 5 10-10" stroke="#2b2341" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+ voice:'<svg viewBox="0 0 48 48"><rect x="9" y="8" width="30" height="34" rx="6" fill="#fff" opacity=".9"/><path d="M15 17h18M15 23h18M15 29h10" stroke="#2b2341" stroke-width="2.6" stroke-linecap="round"/><circle cx="34" cy="35" r="7" fill="#ff5d73"/><path d="M31 35l2 2 4-4" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',
+ me:'<svg viewBox="0 0 48 48"><path d="M24 40c-9 0-15-5-15-13 0-9 7-17 15-17s15 8 15 17c0 8-6 13-15 13z" fill="#fff" opacity=".9"/><circle cx="19" cy="25" r="2.4" fill="#2b2341"/><circle cx="29" cy="25" r="2.4" fill="#2b2341"/><path d="M14 9l4 5 6-6 6 6 4-5v8H14z" fill="#ffd166"/></svg>'};
+const FEATS=[['talk','f6','Talk to Lumi','Chat out loud or by typing. Lumi listens and helps.',1],['lens','f4','Lumi Lens','Snap a letter or payslip. Get it explained and translated.',1],['checkin','f1','Mood check-in','Lumi feels it with you. Track your month in colour.'],['calm','f2','Calm corner','Breathe with Lumi, shrink a worry, ground yourself.'],['story','f3','Tell it once','A Story Pass you control for counsellors and GPs.'],['money','f4','My money','Where your money goes and your own price rise.'],['work','f5','Work rights','Was that trial legal? Track shifts and pay.'],['voice','f1','My voice','Share ideas with government and get a receipt.'],['me','f6','My Lumi','Dress up Lumi, grow a garden, earn badges.']];
+$('#feats').innerHTML=FEATS.map(f=>`<a class="feat ${f[1]}" href="#${f[0]}">${ICON[f[0]]}<span class="go" aria-hidden="true">→</span><h3>${f[2]}</h3><p>${f[3]}</p>${f[4]?'<span class="new">Smart</span>':''}</a>`).join('');
+function streakDays(){const days=new Set(moodLog.map(e=>e.iso));let n=0;const d=new Date();if(!days.has(isoDay(d)))d.setDate(d.getDate()-1);while(days.has(isoDay(d))){n++;d.setDate(d.getDate()-1)}return n}
+const flowers=()=>Object.values(stats).reduce((a,b)=>a+(+b||0),0);
+function drawToday(){const last=moodLog[moodLog.length-1];const nb=BADGES.filter(b=>b[2](stats)).length;
+ const h=new Date().getHours();$('#hello').textContent=(h<12?'Good morning':h<18?'Good afternoon':'Good evening')+(me.uname?', '+me.uname:'');
+ $('#today').innerHTML=[[streakDays()+' day'+(streakDays()===1?'':'s'),'check-in streak'],[last?MOODS[last.m].name:'–','your last mood'],[flowers(),'flowers in your garden'],[nb+' / '+BADGES.length,'badges earned']].map(x=>`<div class="tile"><span>${x[1]}</span><b>${esc(x[0])}</b></div>`).join('')}
+
+/* ---------- TALK ---------- */
+let chat=store.get('chat',[]);
+const LUMI_SYS=()=>`You are ${lumiName()}, a warm, playful, bubbly companion character in a wellbeing app for young people aged 12 to 24 in New South Wales, Australia.${me.uname?' The young person likes to be called '+me.uname+'.':''}
+How to reply:
+- Start every reply with exactly one tag for your face: [happy], [sad], [thinking], [surprised], [love] or [flat]. Then your message.
+- Keep it short: 1 to 4 short sentences, casual and kind, Australian English. No lists unless asked. Ask at most one gentle question.
+- Validate feelings first, then offer one small practical idea. When it fits, suggest one of the app's tools: the Calm page (breathing, worry shrinker, 5-4-3-2-1), Mood check-in, Tell it once (Story Pass for counsellors), My money, Work rights (unpaid trial check, shift diary), Lumi Lens (explains letters and payslips from a photo), My voice (share ideas with government).
+- You are not a counsellor, doctor or lawyer. Never diagnose, never give medication advice, never pretend to be human.
+- If the person mentions suicide, self-harm, abuse, being unsafe, or someone else in danger: respond with care, tell them they deserve support right now, and give Kids Helpline 1800 55 1800 (ages 5 to 25, 24/7), Lifeline 13 11 14, and 000 if anyone is in immediate danger. Encourage them to tell a trusted adult. Stay with them in the chat.
+- Never ask for their full name, address, school or other identifying details.`;
+const STARTERS=['I\'m stressed about exams','I can\'t sleep','I feel lonely','Help me plan my week','My boss didn\'t pay me','I had a fight with my friend'];
+$('#starters').innerHTML=STARTERS.map(s=>`<button type="button" class="chip">${esc(s)}</button>`).join('');
+$$('#starters .chip').forEach(b=>b.addEventListener('click',()=>send(b.textContent)));
+const CRISIS=/(kill(ing)? myself|suicid|self[- ]?harm|hurt(ing)? myself|end (it all|my life)|want to die|wanna die|don'?t want to (be here|live)|cut(ting)? myself|not safe at home|being abused|hits? me|touch(es|ed) me)/i;
+function renderChat(){const box=$('#msgs');box.innerHTML='';
+ if(!chat.length){const d=document.createElement('div');d.className='msg l';d.textContent=`Hey${me.uname?' '+me.uname:''}! I'm ${lumiName()}. What's on your mind today? You can type, tap a starter below, or use the mic.`;box.appendChild(d)}
+ chat.forEach(m=>{const d=document.createElement('div');d.className='msg '+m.r+(m.p?' p':'');if(m.p&&!m.t){d.innerHTML='<span class="dots" aria-label="Lumi is thinking"><i></i><i></i><i></i></span>'}else d.textContent=m.t;box.appendChild(d)});
+ box.scrollTop=box.scrollHeight;$('#starters').hidden=chat.length>0}
+function offline(t){const s=t.toLowerCase();
+ if(CRISIS.test(t))return'I\'m really glad you told me. You deserve support from a real person right now: Kids Helpline 1800 55 1800, Lifeline 13 11 14, or 000 if you\'re in danger.';
+ if(/exam|school|study|assignment|hsc/.test(s))return'Exams can feel huge. Try breaking it into one tiny task for the next 25 minutes, then a short break. The Calm page can help if your mind is racing.';
+ if(/sleep|tired|awake/.test(s))return'Sleep struggles are rough. Try the Sleepy 4-7-8 breathing on the Calm page, and put your phone away a bit before bed.';
+ if(/lonely|alone|friend/.test(s))return'Feeling lonely is really hard, and you\'re not the only one. Is there one person you could send a quick "hey" to today?';
+ if(/pay|boss|shift|trial|work/.test(s))return'That\'s not okay. Check the Work rights page: it has a 4-question trial check and a shift diary. The Fair Work Infoline is 13 13 94.';
+ return'I hear you. I can give fuller replies when my AI brain is on (see My Lumi). For now, try a check-in or the Calm page. I\'m right here.'}
+async function send(text){text=String(text||'').trim();if(!text)return;$('#chatIn').value='';
+ chat.push({r:'u',t:text});bump('chats');if(CRISIS.test(text))$('#crisis').hidden=false;
+ const pend={r:'l',t:'',p:true};chat.push(pend);renderChat();if(lumi){lumi.think(true);lumi.expr('thinking')}
+ $('#chatSend').disabled=true;
+ let tag='happy';
+ if(!aiReady()){await new Promise(r=>setTimeout(r,700));pend.t=offline(text);if(CRISIS.test(text))tag='love'}
+ else{try{const tr=chat.filter(m=>!m.p).slice(-20).map(m=>(m.r==='u'?'Young person: ':lumiName()+': ')+m.t).join('\n');
+   const r=await ask(LUMI_SYS()+'\n\nConversation so far:\n'+tr+'\n\nWrite '+lumiName()+'\'s next reply now.',{modelTier:'default',onText:({text})=>{if(!text||/^Thinking/.test(text))return;pend.t=text.replace(/^\s*\[[a-z]*\]?\s*/i,'');const last=$('#msgs').lastElementChild;if(last)last.textContent=pend.t;$('#msgs').scrollTop=1e9}});
+   const m=String(r.text||'').match(/^\s*\[(\w+)\]\s*/);if(m)tag=m[1].toLowerCase();pend.t=String(r.text||'').replace(/^\s*\[\w+\]\s*/,'').trim()||'…'}
+  catch(e){pend.t=aiErr(e);tag='sad'}}
+ pend.p=false;store.set('chat',chat);renderChat();$('#chatSend').disabled=false;
+ if(lumi){lumi.think(false);lumi.expr({happy:'happy',sad:'sad',thinking:'flat',surprised:'surprised',love:'love',flat:'flat'}[tag]||'happy');if(tag==='happy'||tag==='love')lumi.jump()}
+ if($('#ttsOn').checked)speak(pend.t)}
+$('#chatSend').addEventListener('click',()=>send($('#chatIn').value));
+$('#chatIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send($('#chatIn').value)}});
+$('#clrChat').addEventListener('click',()=>{chat=[];store.set('chat',chat);$('#crisis').hidden=true;renderChat()});
+$('#ttsOn').checked=!!me.tts;$('#ttsOn').addEventListener('change',e=>{me.tts=e.target.checked;store.set('me',me)});
+$('#voiceSel').addEventListener('change',e=>{me.voice=e.target.value;store.set('me',me);speak('Hi! This is my new voice.')});
+$('#toPass').addEventListener('click',async e=>{const said=chat.filter(m=>m.r==='u').map(m=>m.t).join('\n');if(!said){toast('Chat with Lumi first.');return}
+ const b=e.currentTarget;b.disabled=true;b.textContent='Lumi is writing…';
+ try{const r=await ask(`From the young person's messages below, draft a "Story Pass" they can choose to show a counsellor or GP. Use only what they actually said. Write in first person ("I..."), short and plain. Use "" for anything they did not mention. Reply with JSON only, no other text:
+{"now":"what's been going on","since":"how long it has been happening","helps":"what helps","not":"what doesn't help","want":"what they want from support"}
+
+Their messages:
+${said}`,{modelTier:'default'});
+  const j=parseJSON(r.text);if(!j)throw{code:'parse'};
+  PARTS.forEach(p=>{if(j[p[0]]&&String(j[p[0]]).trim()){$('#st-'+p[0]).value=String(j[p[0]]).trim()}});saveStory();$('#draftNote').hidden=false;location.hash='#story';toast('Lumi drafted your Story Pass. Check it carefully.')}
+ catch(err){toast(err&&err.code==='parse'?'Lumi got a bit muddled. Try again?':aiErr(err))}
+ b.disabled=false;b.textContent='Make my Story Pass'});
+
+/* ---------- LENS ---------- */
+const LMODES=[['explain','Explain a letter or bill'],['payslip','Check my payslip'],['family','Translate for my family']];
+let lmode='explain',lblob=null,lres=null;
+$('#lensModes').innerHTML=LMODES.map((m,i)=>`<button type="button" class="chip" data-m="${m[0]}" aria-pressed="${!i}">${m[1]}</button>`).join('');
+$$('#lensModes .chip').forEach(b=>b.addEventListener('click',()=>{lmode=b.dataset.m;$$('#lensModes .chip').forEach(x=>x.setAttribute('aria-pressed',x===b));if(lmode==='family'&&!$('#lensLang').value)$('#lensLang').value='Arabic'}));
+const LANGS=[['','No, English is fine'],['Arabic','ar'],['Mandarin Chinese (Simplified)','zh'],['Cantonese Chinese (Traditional)','zh-HK'],['Nepali','ne'],['Tamil','ta'],['Vietnamese','vi'],['Korean','ko'],['Turkish','tr'],['Hindi','hi'],['Urdu','ur'],['Persian (Farsi)','fa'],['Dari','fa'],['Punjabi','pa'],['Greek','el'],['Spanish','es']];
+$('#lensLang').innerHTML=LANGS.map(l=>`<option value="${esc(l[0])}">${esc(l[0]||l[1])}</option>`).join('');
+function loadImg(file){if(!file||!/^image\//.test(file.type)){toast('Please choose a photo.');return}
+ const url=URL.createObjectURL(file);const im=new Image();im.onload=()=>{const M=1600,sc=Math.min(1,M/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);c.getContext('2d').drawImage(im,0,0,c.width,c.height);c.toBlob(b=>{lblob=b;const pv=$('#lensImg');pv.src=URL.createObjectURL(b);pv.hidden=false;$('#dropTxt').textContent='Looks good! Now tap Ask Lumi.';URL.revokeObjectURL(url)},'image/jpeg',.86)};im.onerror=()=>toast('That photo could not be opened.');im.src=url}
+['#fileIn'].forEach(s=>$(s).addEventListener('change',e=>{loadImg(e.target.files[0]);e.target.value=''}));
+const drop=$('#drop');
+drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('over')});drop.addEventListener('dragleave',()=>drop.classList.remove('over'));
+drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('over');loadImg(e.dataTransfer.files[0])});
+const LFIELDS={explain:[['what','What it is'],['from','From'],['summary','In plain English'],['todo','What to do'],['deadline','Deadline'],['money','Money'],['help','Who can help']],payslip:[['what','What it is'],['from','Employer'],['summary','In plain English'],['hours','Hours'],['pay','Pay'],['rate','Hourly rate'],['super','Super'],['check','Worth double-checking']],family:[['what','What it is'],['summary','In plain English']]};
+$('#lensGo').addEventListener('click',async e=>{if(!lblob){toast('Add a photo first.');return}if(!aiReady()){toast(aiErr({code:'no_ai'}));return}
+ const lang=$('#lensLang').value;if(lmode==='family'&&!lang){toast('Pick your family\'s language first.');return}
+ const tr=lang?`,"translated":"the plain-English summary and the steps, translated into ${lang} using simple everyday words a parent would understand"`:'';
+ const rules='Never write out full account, card, Medicare, Centrelink CRN, tax file or ID numbers (say "your account number" instead). If you cannot read the photo or it is not a document, say so in "summary" and leave other fields empty. This is general information, not legal or financial advice. Reply with JSON only, no other text.';
+ const P={explain:`You are Lumi, helping a young person in New South Wales, Australia understand a document in this photo (a letter, bill, fine, notice, school note, lease or form). Explain it simply, for a teenager. ${rules}
+{"what":"what this document is, under 12 words","from":"who sent it","summary":"plain-English summary, 2 or 3 short sentences","todo":["up to 4 short action steps"],"deadline":"any due date, or \\"\\"","money":"any amount owed or paid, or \\"\\"","help":"who to contact if confused (from the document if shown), or \\"\\""${tr}}`,
+ payslip:`You are Lumi, helping a young worker in New South Wales, Australia understand the payslip in this photo. ${rules} Do not say whether the pay is legal; instead point out what is worth checking with the Fair Work Pay Calculator or the Fair Work Infoline 13 13 94.
+{"what":"what this is, under 12 words","from":"employer name","summary":"plain-English summary, 2 short sentences","hours":"hours worked shown","pay":"gross and net pay shown","rate":"hourly rate or rates shown","super":"whether superannuation is shown and how much","check":["up to 4 short things worth double-checking"]${tr}}`,
+ family:`You are Lumi, helping a young person in New South Wales, Australia explain the document in this photo to a parent who does not read English well. ${rules}
+{"what":"what this document is, under 12 words, in English","summary":"plain-English summary in 2 short sentences, including any deadline or amount","translated":"the key message, any deadline, any amount and what to do next, in ${lang||'the family language'} using simple everyday words"}`};
+ const b=e.currentTarget;b.disabled=true;b.textContent='Lumi is reading…';const box=$('#drop');box.classList.add('scanline');$('#lensOut').innerHTML='<div class="empty"><span class="dots"><i></i><i></i><i></i></span> Reading your photo…</div>';
+ try{const r=await ask(P[lmode],{images:[lblob],max:900,onStatus:t=>{$('#lensOut').innerHTML='<div class="empty"><span class="dots"><i></i><i></i><i></i></span> '+esc(t)+'</div>'}});let j=parseJSON(r.text);if(!j){if(!String(r.text||'').trim())throw{code:'parse'};j={summary:String(r.text).trim()}}lres=j;bump('scans');
+  const f=LFIELDS[lmode].concat(lang?[['translated','For your family ('+lang+')']]:[]);
+  $('#lensOut').innerHTML='<div class="res">'+f.filter(x=>j[x[0]]&&(Array.isArray(j[x[0]])?j[x[0]].length:String(j[x[0]]).trim())).map(x=>{const v=j[x[0]];return `<div${x[0]==='translated'?' dir="auto" style="background:var(--but)"':''}><b>${esc(x[1])}</b>${Array.isArray(v)?'<ul>'+v.map(i=>`<li>${esc(i)}</li>`).join('')+'</ul>':esc(v)}</div>`}).join('')+'</div><p class="small mut" style="margin-top:10px">Lumi can make mistakes. Check anything important with the sender or a trusted adult.</p>';
+  $('#lensSpeak').hidden=false;$('#sayTr').hidden=!j.translated;if(lumi){lumi.expr('happy');lumi.jump()}}
+ catch(err){$('#lensOut').innerHTML=`<div class="empty">${esc(err&&err.code==='parse'?'Lumi couldn\'t read that clearly. Try a sharper, well-lit photo.':aiErr(err))}</div>`}
+ box.classList.remove('scanline');b.disabled=false;b.textContent='Ask Lumi'});
+$('#sayEn').addEventListener('click',()=>{if(!lres)return;speak([lres.what,lres.summary].concat(Array.isArray(lres.todo)?lres.todo:[]).concat(Array.isArray(lres.check)?lres.check:[]).filter(Boolean).join('. '),{language:'en'})});
+$('#sayTr').addEventListener('click',()=>{if(!lres||!lres.translated)return;const l=LANGS.find(x=>x[0]===$('#lensLang').value);speak(lres.translated,l&&l[1]?{language:l[1]}:{})});
+
+/* ---------- CHECK-IN ---------- */
+let selMood=null;
+let moodLog=store.get('moods',[]).map(e=>e.iso?e:Object.assign({},e,{iso:isoDay()}));
+$('#moods').innerHTML=Object.keys(MOODS).map(k=>`<button type="button" class="mood" id="mood-${k}" data-m="${k}" aria-pressed="false" style="background:${MOODS[k].bg}">${moodSvg(MOODS[k])}${MOODS[k].name}</button>`).join('');
+$$('.mood').forEach(b=>b.addEventListener('click',()=>{selMood=b.dataset.m;$$('.mood').forEach(x=>x.setAttribute('aria-pressed',x===b));const m=MOODS[selMood];if(lumi){lumi.colors(m.c1,m.c2,m.amp,m.spd);lumi.expr(m.ex);lumi.jump()}say(m.say);const tp=$('#mtip');tp.hidden=false;tp.textContent=m.tip}));
+$('#energy').addEventListener('input',e=>$('#enval').textContent=e.target.value);
+function drawHist(){const s=streakDays();$('#streak').textContent=s+' day streak';
+ if(!moodLog.length){$('#hist').innerHTML='<div class="empty" style="margin-top:12px">No check-ins yet. Pick a mood above and save it.</div>'}
+ else{const last=moodLog.slice(-14);$('#hist').innerHTML='<div class="hist">'+last.map(e=>{const d=e.iso.split('-');return `<div title="${esc(MOODS[e.m].name)}${e.note?' · '+esc(e.note):''}" style="height:${e.e*20}%;background:${MOODS[e.m].bg}"><span>${+d[2]}/${+d[1]}</span></div>`}).join('')+'</div><p class="small mut" style="margin-top:30px">Bar height = energy. Colour = mood. Hover over a bar to see your note.</p>'}
+ const now=new Date(),y=now.getFullYear(),mo=now.getMonth();$('#calH').textContent=now.toLocaleDateString('en-AU',{month:'long',year:'numeric'});
+ const first=(new Date(y,mo,1).getDay()+6)%7,days=new Date(y,mo+1,0).getDate();const byDay={};moodLog.forEach(e=>byDay[e.iso]=e.m);
+ let h=['M','T','W','T','F','S','S'].map(d=>`<div class="h">${d}</div>`).join('');
+ for(let i=0;i<first;i++)h+='<div style="background:none"></div>';
+ for(let d=1;d<=days;d++){const iso=y+'-'+String(mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');const m=byDay[iso];h+=`<div class="${m?'x':''}${d===now.getDate()?' td':''}" ${m?`style="background:${MOODS[m].bg}" title="${MOODS[m].name}"`:''}>${d}</div>`}
+ $('#cal').innerHTML=h;drawToday()}
+$('#saveMood').addEventListener('click',async e=>{if(!selMood){say('Pick a mood first!');toast('Pick a mood first.');return}
+ const note=$('#note').value.trim();moodLog.push({m:selMood,e:+$('#energy').value,note,iso:isoDay()});store.set('moods',moodLog);$('#note').value='';bump('checkins');drawHist();confetti(e.currentTarget);say('Saved! Thanks for checking in.');if(lumi)lumi.jump();
+ if(note&&aiReady()){const rf=$('#reflect');rf.hidden=false;rf.innerHTML='<span class="dots"><i></i><i></i><i></i></span> Lumi is thinking about what you wrote…';
+  try{const r=await ask(`You are Lumi, a kind companion for young people (12 to 24) in NSW, Australia. They just checked in feeling "${MOODS[selMood].name}" with energy ${$('#energy').value}/5 and wrote: "${note}". Reply in 2 short sentences: first a warm reflection of what they wrote, then one gentle, open question to help them think. Plain text only. If they mention self-harm, suicide or being unsafe, kindly give Kids Helpline 1800 55 1800, Lifeline 13 11 14 and 000.`,{modelTier:'quick'});rf.textContent=String(r.text||'').trim()}catch(err){rf.textContent=aiErr(err)}}});
+$('#clrMood').addEventListener('click',()=>{moodLog=[];store.set('moods',moodLog);drawHist()});
+
+/* ---------- CALM ---------- */
+const PATS=[['Easy 4-6',[['Breathe in',4],['Breathe out',6]]],['Box 4-4-4-4',[['Breathe in',4],['Hold',4],['Breathe out',4],['Hold',4]]],['Sleepy 4-7-8',[['Breathe in',4],['Hold',7],['Breathe out',8]]]];
+let pat=0,brun=null,cycles=0;
+$('#pats').innerHTML=PATS.map((p,i)=>`<button type="button" class="btn ${i?'ghost':'ink'}" data-p="${i}" aria-pressed="${!i}">${p[0]}</button>`).join('');
+$$('#pats button').forEach(b=>b.addEventListener('click',()=>{pat=+b.dataset.p;$$('#pats button').forEach(x=>{const on=x===b;x.className='btn '+(on?'ink':'ghost');x.setAttribute('aria-pressed',on)});if(brun){stopBreath();startBreath()}}));
+function stopBreath(){if(brun){cancelAnimationFrame(brun.raf);brun=null;stopSpeak();}if(lumi)lumi.breath(null);$('#bgo').textContent='Start';$('#bword').textContent='Ready?';$('#bsub').textContent=cycles?`Nice. You did ${cycles} round${cycles>1?'s':''}.`:'Pick a pattern, then press start.'}
+function startBreath(){cycles=0;const steps=PATS[pat][1];let i=0,t0=performance.now(),level=0,said=-1;$('#bgo').textContent='Stop';
+ const tick=now=>{const [w,len]=steps[i];const p=Math.min((now-t0)/(len*1000),1);
+  if(said!==i){said=i;if($('#bVoice').checked)speak(w,{rate:.8})}
+  if(w==='Breathe in')level=p;else if(w==='Breathe out')level=1-p;
+  if(lumi)lumi.breath(level);$('#bword').textContent=w;$('#bsub').textContent=Math.ceil(len-p*len)+' · round '+(cycles+1);
+  if(p>=1){i=(i+1)%steps.length;t0=now;said=-1;if(i===0){cycles++;bump('breaths')}}
+  if(brun)brun.raf=requestAnimationFrame(tick)};
+ brun={raf:0};brun.raf=requestAnimationFrame(tick)}
+$('#bgo').addEventListener('click',()=>brun?stopBreath():startBreath());
+const SENSE=[[5,'things you can see'],[4,'things you can touch'],[3,'things you can hear'],[2,'things you can smell'],[1,'thing you can taste']];
+$('#sense').innerHTML=SENSE.map((s,i)=>`<label><input type="checkbox" id="sense-${i}"><span class="n">${s[0]}</span><span>${s[1]}</span></label>`).join('');
+$$('#sense input').forEach(c=>c.addEventListener('change',()=>{const n=$$('#sense input:checked').length;$('#sdone').textContent=n===5?'All done. Notice how your body feels now.':n?`${n} of 5 done.`:'';if(n===5){confetti($('#sense'));bump('grounded');$$('#sense input').forEach(x=>x.disabled=true);setTimeout(()=>{$$('#sense input').forEach(x=>{x.checked=false;x.disabled=false})},6000)}}));
+const WTIPS=['Name it: what exactly are you scared will happen?','Ask: how likely is that, really, out of 10?','Ask: if it did happen, how would you cope?','Pick one tiny thing you can do in the next hour.'];
+$('#shrink').addEventListener('click',async e=>{const w=$('#worryIn').value.trim();if(!w){toast('Write or say your worry first.');return}
+ const out=$('#worryOut');out.innerHTML=`<div class="worry" id="wtext">"${esc(w)}"</div>`;requestAnimationFrame(()=>requestAnimationFrame(()=>{const wt=$('#wtext');if(wt)wt.classList.add('shrink')}));bump('worries');
+ if(CRISIS.test(w)){out.innerHTML+='<div class="crisis" style="margin-top:10px">This sounds really serious, and you deserve support from a real person now: Kids Helpline <b>1800 55 1800</b> · Lifeline <b>13 11 14</b> · <b>000</b> if you\'re in danger.</div>';return}
+ if(!aiReady()){out.innerHTML+='<div class="wcards">'+WTIPS.map((t,i)=>`<div class="${['bg-lil','bg-min','bg-but','bg-pea'][i]}">${esc(t)}</div>`).join('')+'</div>';return}
+ const b=e.currentTarget;b.disabled=true;
+ try{const r=await ask(`You are Lumi, a kind companion for young people (12 to 24) in NSW, Australia. Using gentle, CBT-style thinking (you are not a therapist), help them shrink this worry. Reply with JSON only:
+{"feeling":"name the feeling kindly, under 12 words","realistic":"a balanced, realistic way to see it, 1 or 2 short sentences","step":"one tiny doable step for the next 24 hours, under 20 words"}
+If the worry mentions self-harm, suicide or being unsafe, set "step" to "Please talk to someone now: Kids Helpline 1800 55 1800, Lifeline 13 11 14, or 000 if you're in danger."
+Worry: ${w}`,{modelTier:'quick'});
+  const j=parseJSON(r.text)||{realistic:String(r.text||'').trim()};if(!j.feeling&&!j.realistic&&!j.step)throw{code:'parse'};
+  out.innerHTML+='<div class="wcards">'+[['bg-lil','Feeling',j.feeling],['bg-min','Another way to see it',j.realistic],['bg-but','One tiny step',j.step]].filter(x=>x[2]).map(x=>`<div class="${x[0]}"><b style="font-family:Fredoka">${x[1]}</b><br>${esc(x[2])}</div>`).join('')+'</div>';
+  if(lumi){lumi.expr('happy');lumi.jump()}}
+ catch(err){out.innerHTML+=`<div class="empty" style="margin-top:10px">${esc(err&&err.code==='parse'?'Lumi got a bit muddled. Try again?':aiErr(err))}</div>`}
+ b.disabled=false});
+
+/* ---------- STORY ---------- */
+const PARTS=[['now','What\'s been going on','e.g. I\'ve been really stressed about school and not sleeping'],['since','How long it\'s been happening','e.g. Since the start of Term 3'],['helps','What helps me','e.g. Music, talking to my sister, going for walks'],['not','What doesn\'t help','e.g. Being told to just calm down'],['want','What I want from support','e.g. Someone to help me make a plan for exams'],['safe','Things I don\'t want to talk about yet','e.g. My family situation']];
+let story=store.get('story',{});
+const MIC=f=>`<button class="btn ghost icon mic" data-for="${f}" type="button" aria-label="Speak this part"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>`;
+$('#parts').innerHTML=PARTS.map(p=>`<div class="part"><div class="hd"><label class="lbl" for="st-${p[0]}" style="margin:0">${p[1]}</label><label class="sw"><input type="checkbox" id="sh-${p[0]}" ${(story['sh-'+p[0]]??(p[0]!=='safe'))?'checked':''}>Share</label></div><div class="inrow" style="margin-top:8px"><textarea id="st-${p[0]}" placeholder="${esc(p[2])}">${esc(story[p[0]]||'')}</textarea>${MIC('st-'+p[0])}</div></div>`).join('');
+function saveStory(){PARTS.forEach(p=>{story[p[0]]=$('#st-'+p[0]).value;story['sh-'+p[0]]=$('#sh-'+p[0]).checked});store.set('story',story)}
+$$('#parts textarea,#parts input').forEach(el=>el.addEventListener('input',saveStory));
+$$('#parts input[type=checkbox]').forEach(el=>el.addEventListener('change',saveStory));
+let passText='';
+$('#mkPass').addEventListener('click',e=>{saveStory();const on=PARTS.filter(p=>story['sh-'+p[0]]&&String(story[p[0]]||'').trim());
+ if(!on.length){$('#pass').innerHTML='<h3>Story Pass</h3>Write something and switch on at least one part to share.';return}
+ passText='MY STORY PASS (made with Lumi)\n\n'+on.map(p=>p[1].toUpperCase()+'\n'+story[p[0]].trim()).join('\n\n');
+ $('#pass').innerHTML='<h3>Story Pass</h3>'+on.map(p=>`<b>${esc(p[1])}</b>\n${esc(story[p[0]].trim())}`).join('\n\n');confetti(e.currentTarget);bump('passes')});
+$('#cpPass').addEventListener('click',async()=>{if(!passText){$('#cpMsg').textContent='Make your pass first.';return}try{await navigator.clipboard.writeText(passText);$('#cpMsg').textContent='Copied!'}catch(e){$('#cpMsg').textContent='Copying isn\'t allowed here. Select the text instead.'}});
+$('#dlPass').addEventListener('click',()=>{if(!passText){$('#cpMsg').textContent='Make your pass first.';return}saveFile('my-story-pass.txt',passText)});
+$('#clrStory').addEventListener('click',()=>{story={};store.set('story',story);PARTS.forEach(p=>{$('#st-'+p[0]).value='';$('#sh-'+p[0]).checked=p[0]!=='safe'});passText='';$('#draftNote').hidden=true;$('#pass').innerHTML='<h3>Story Pass</h3>Your pass will appear here.'});
+
+/* ---------- MONEY ---------- */
+const CATS=[['rent','Rent or board','#a78bfa',150],['food','Food','#7bdcb5',80],['transport','Transport','#60a5fa',40],['phone','Phone and internet','#ffd166',25],['fun','Fun and going out','#ff8fa3',50],['other','Other bills','#c4b5a0',20]];
+let money=Object.assign({income:400},Object.fromEntries(CATS.map(c=>[c[0],c[3]])),store.get('money',{}));
+let rises=Object.assign(Object.fromEntries(CATS.map(c=>[c[0],5])),store.get('rises',{}));
+$('#minp').innerHTML=`<div style="grid-column:1/-1"><label class="lbl" for="m-income">Money coming in per week ($)</label><input type="number" min="0" id="m-income" value="${+money.income||0}" inputmode="decimal"></div>`+CATS.map(c=>`<div><label class="lbl" for="m-${c[0]}"><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${c[2]};margin-right:6px"></i>${c[1]}</label><input type="number" min="0" id="m-${c[0]}" value="${+money[c[0]]||0}" inputmode="decimal"></div>`).join('');
+$('#rises').innerHTML=CATS.map(c=>`<label class="lbl" for="r-${c[0]}">${c[1]}: <span id="rv-${c[0]}">${rises[c[0]]}</span>% more</label><input type="range" id="r-${c[0]}" min="0" max="30" value="${rises[c[0]]}">`).join('');
+const fmt=n=>(n<0?'-':'')+'$'+Math.round(Math.abs(n)).toLocaleString('en-AU');
+let moneyTouched=false;
+function drawMoney(){money.income=Math.max(0,+$('#m-income').value||0);CATS.forEach(c=>{money[c[0]]=Math.max(0,+$('#m-'+c[0]).value||0);rises[c[0]]=+$('#r-'+c[0]).value;$('#rv-'+c[0]).textContent=rises[c[0]]});store.set('money',money);store.set('rises',rises);
+ const tot=CATS.reduce((s,c)=>s+money[c[0]],0);const R=70,C=2*Math.PI*R;let off=0;
+ $('#donut').innerHTML=`<circle cx="90" cy="90" r="${R}" fill="none" stroke="var(--line)" stroke-width="28"/>`+(tot?CATS.map(c=>{const f=money[c[0]]/tot;const s=`<circle cx="90" cy="90" r="${R}" fill="none" stroke="${c[2]}" stroke-width="28" stroke-dasharray="${f*C} ${C}" stroke-dashoffset="${-off*C}" transform="rotate(-90 90 90)"/>`;off+=f;return s}).join(''):'')+`<text x="90" y="88" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="22" font-weight="700" fill="currentColor">${fmt(tot)}</text><text x="90" y="107" text-anchor="middle" font-size="12" fill="currentColor" opacity=".7">spent / week</text>`;
+ $('#legend').innerHTML=CATS.map(c=>`<div><i style="background:${c[2]}"></i>${c[1]}<em>${tot?Math.round(money[c[0]]/tot*100):0}%</em></div>`).join('');
+ const left=money.income-tot,hs=money.income?money.rent/money.income*100:0;
+ $('#mread').innerHTML=(money.income?`<b>${left>=0?fmt(left)+' left over each week.':'You\'re '+fmt(-left)+' short each week.'}</b> Rent or board is <b>${Math.round(hs)}%</b> of your income.`+(hs>30?' That\'s over 30%, a common sign of housing stress.':' That\'s under 30%. Nice.'):'Add the money you get each week to see your picture.');
+ const inc=tot?CATS.reduce((s,c)=>s+money[c[0]]/tot*rises[c[0]],0):0;
+ $('#pinf').textContent=inc.toFixed(1)+'%';$('#pinf2').textContent=tot?`That's about ${fmt(tot*inc/100)} more every week, or ${fmt(tot*inc/100*52)} a year.`:''}
+$$('#minp input,#rises input').forEach(i=>i.addEventListener('input',()=>{drawMoney();if(!moneyTouched){moneyTouched=true;bump('money')}}));drawMoney();
+$('#mTips').addEventListener('click',async e=>{const b=e.currentTarget;b.disabled=true;const out=$('#mTipsOut');out.innerHTML='<div class="empty" style="margin-top:10px"><span class="dots"><i></i><i></i><i></i></span></div>';
+ try{const r=await ask(`You are Lumi, a friendly money buddy for a young person (12 to 24) in NSW, Australia. Their weekly money: income $${money.income}; ${CATS.map(c=>c[1]+' $'+money[c[0]]).join('; ')}. Give exactly 3 short, realistic, non-judgemental saving ideas that fit THEIR numbers (each under 25 words). You may mention genuine NSW or Australian options such as student concession Opal cards, but do not invent prices or programs. Not financial advice. Reply with JSON only: {"tips":["","",""]}`,{modelTier:'quick'});
+  let j=parseJSON(r.text);if(!j||!Array.isArray(j.tips)){const ls=String(r.text||'').split('\n').map(x=>x.replace(/^[\s\-*\d.)]+/,'').trim()).filter(x=>x.length>8);if(!ls.length)throw{code:'parse'};j={tips:ls}}out.innerHTML='<div class="wcards">'+j.tips.slice(0,3).map((t,i)=>`<div class="${['bg-lil','bg-min','bg-sky'][i]}">${esc(t)}</div>`).join('')+'</div>'}
+ catch(err){out.innerHTML=`<div class="empty" style="margin-top:10px">${esc(aiErr(err))}</div>`}b.disabled=false});
+
+/* ---------- WORK ---------- */
+const QS=[['Was the trial only to show skills you need for the job?',true],['Was it short, only as long as needed to show those skills?',true],['Were you directly supervised the whole time?',true],['Did you do normal work for them, like serving customers or cleaning?',false]];
+let ans=Array(QS.length).fill(null),quizDone=false;
+$('#quiz').innerHTML='<h2>Quick check</h2>'+QS.map((q,i)=>`<div class="q"><p>${i+1}. ${q[0]}</p><div class="yn"><button type="button" data-q="${i}" data-a="1" aria-pressed="false">Yes</button><button type="button" data-q="${i}" data-a="0" aria-pressed="false">No</button></div></div>`).join('');
+$$('#quiz .yn button').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.q;ans[i]=b.dataset.a==='1';b.parentNode.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+ if(ans.every(a=>a!==null)){const ok=ans.every((a,j)=>a===QS[j][1]);const v=$('#verdict');v.hidden=false;v.className='tip '+(ok?'bg-min':'bg-pea');
+  v.innerHTML=ok?'<h3>Sounds like it might be okay.</h3><p style="margin:0">A short, supervised skills test can be unpaid. If it went any longer than that, you should be paid.</p>':'<h3>You probably should have been paid.</h3><p style="margin:0">From your answers, this sounds like real work. Write the date and hours in your shift diary, and call the Fair Work Infoline on <b style="white-space:nowrap">13 13 94</b>. It\'s free.</p>';
+  if(!quizDone){quizDone=true;bump('quiz')}}}));
+let shifts=store.get('shifts',[]);
+function drawShifts(){if(!shifts.length){$('#shifts').innerHTML='<div class="empty" style="margin-top:14px">No shifts yet.</div>';return}
+ const H=shifts.reduce((s,x)=>s+x.h,0),P=shifts.reduce((s,x)=>s+x.p,0);
+ $('#shifts').innerHTML='<div style="overflow-x:auto"><table><thead><tr><th>Date</th><th class="r">Hours</th><th class="r">Paid</th><th class="r">Per hour</th><th></th></tr></thead><tbody>'+shifts.map((s,i)=>`<tr><td>${esc(s.d)}</td><td class="r">${s.h}</td><td class="r">$${s.p.toFixed(2)}</td><td class="r">${s.h?'$'+(s.p/s.h).toFixed(2):'–'}</td><td class="r"><button type="button" class="btn ghost sm" data-del="${i}" aria-label="Delete shift">✕</button></td></tr>`).join('')+`</tbody><tfoot><tr><th>Total</th><th class="r">${+H.toFixed(2)}</th><th class="r">$${P.toFixed(2)}</th><th class="r">${H?'$'+(P/H).toFixed(2):'–'}</th><th></th></tr></tfoot></table></div><p class="small mut">Check your minimum pay rate with the Pay Calculator at fairwork.gov.au.</p>`;
+ $$('[data-del]').forEach(b=>b.addEventListener('click',()=>{shifts.splice(+b.dataset.del,1);store.set('shifts',shifts);drawShifts()}))}
+$('#addShift').addEventListener('click',()=>{const h=+$('#shrs').value,p=+$('#spay').value;if(!(h>0)){toast('Add the hours you worked.');$('#shrs').focus();return}shifts.push({d:$('#sdate').value.trim()||new Date().toLocaleDateString('en-AU'),h,p:p>=0?p:0});store.set('shifts',shifts);$('#sdate').value=$('#shrs').value=$('#spay').value='';drawShifts()});
+
+/* ---------- VOICE ---------- */
+const STAGES=['Received','Read by a real person','Sent to the right department','Answered'];
+let ideas=store.get('ideas',[]);
+const code=()=>'NSW-'+Array.from({length:5},()=>'ABCDEFGHJKMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*31)]).join('');
+function drawIdeas(){if(!ideas.length){$('#ideas').innerHTML='<div class="empty">No receipts yet. Share an idea to get your first tracking code.</div>';return}
+ $('#ideas').innerHTML=ideas.map((x,i)=>[x,i]).reverse().map(([x,i])=>`<div class="idea"><div class="row" style="justify-content:space-between"><span class="code">${esc(x.c)}</span><span class="pill">${esc(x.topic)}</span></div><h3 style="margin-top:10px">${esc(x.t)}</h3><div class="steps">${STAGES.map((s,j)=>`<i class="${j<=x.s?'on':''}"></i>`).join('')}</div><p style="margin:0"><b>${STAGES[x.s]}</b>${x.s===3?': "Thanks! We\'re including this in our 2027 planning." (example reply)':''}</p>${x.s<3?`<button type="button" class="btn ghost sm" style="margin-top:10px" data-adv="${i}">Demo: next step</button>`:''}</div>`).join('');
+ $$('[data-adv]').forEach(b=>b.addEventListener('click',()=>{const x=ideas[+b.dataset.adv];x.s=Math.min(3,x.s+1);store.set('ideas',ideas);drawIdeas();if(x.s===3)confetti($('#ideas'))}))}
+$('#sendIdea').addEventListener('click',e=>{const t=$('#ititle').value.trim();if(!t){toast('Write your idea in one line first.');$('#ititle').focus();return}ideas.push({c:code(),t,topic:$('#itopic').value,why:$('#iwhy').value.trim(),s:0});store.set('ideas',ideas);$('#ititle').value=$('#iwhy').value='';$('#polishOut').innerHTML='';bump('ideas');drawIdeas();confetti(e.currentTarget);toast('Sent! Your receipt is ready.')});
+$('#polish').addEventListener('click',async e=>{const t=$('#ititle').value.trim(),w=$('#iwhy').value.trim();if(!t){toast('Write your idea in one line first.');return}
+ const b=e.currentTarget;b.disabled=true;const out=$('#polishOut');out.innerHTML='<div class="empty" style="margin-top:10px"><span class="dots"><i></i><i></i><i></i></span></div>';
+ try{const r=await ask(`You are Lumi, helping a young person in NSW, Australia pitch an idea to the NSW Office for Youth. Their idea: "${t}". Topic: ${$('#itopic').value}. Why it matters (their words): "${w}". Keep their voice and meaning; do not add facts or statistics you can't be sure of. Reply with JSON only:
+{"title":"a sharper one-line version, under 14 words","why":"a clearer 2 or 3 sentence 'why it matters' in their voice","question":"one question they could answer to make it even stronger"}`,{modelTier:'quick'});
+  const j=parseJSON(r.text)||{title:'',why:String(r.text||'').trim(),question:''};if(!j.title&&!j.why)throw{code:'parse'};
+  out.innerHTML=`<div class="tip bg-lil"><b style="font-family:Fredoka">Lumi's suggestion</b><p style="margin:6px 0"><b>${esc(j.title)}</b></p><p style="margin:0 0 8px">${esc(j.why)}</p><p class="small" style="margin:0 0 10px">To make it even stronger: ${esc(j.question)}</p><button type="button" class="btn ink sm" id="usePolish">Use this</button></div>`;
+  $('#usePolish').addEventListener('click',()=>{if(j.title)$('#ititle').value=String(j.title).slice(0,90);if(j.why)$('#iwhy').value=j.why;out.innerHTML=''})}
+ catch(err){out.innerHTML=`<div class="empty" style="margin-top:10px">${esc(aiErr(err))}</div>`}b.disabled=false});
+
+/* ---------- ME ---------- */
+$('#lname').value=me.lname;$('#uname').value=me.uname;
+$('#lname').addEventListener('input',e=>{me.lname=e.target.value.trim();store.set('me',me);say('Hi, I\'m '+lumiName()+'!')});
+$('#uname').addEventListener('input',e=>{me.uname=e.target.value.trim();store.set('me',me);drawToday()});
+$('#skins').innerHTML=SKINS.map((s,i)=>`<button type="button" class="swatch" data-i="${i}" aria-label="${s[0]}" title="${s[0]}" aria-pressed="${i===me.skin}" style="background:linear-gradient(160deg,${s[1]},${s[2]})"></button>`).join('');
+$$('#skins .swatch').forEach(b=>b.addEventListener('click',()=>{me.skin=+b.dataset.i;store.set('me',me);$$('#skins .swatch').forEach(x=>x.setAttribute('aria-pressed',x===b));skinLumi();if(lumi)lumi.jump();say('Ooh, '+SKINS[me.skin][0]+'!')}));
+$('#accs').innerHTML=ACCS.map(a=>`<button type="button" class="chip" data-a="${a[0]}" aria-pressed="${a[0]===me.acc}">${a[1]}</button>`).join('');
+$$('#accs .chip').forEach(b=>b.addEventListener('click',()=>{me.acc=b.dataset.a;store.set('me',me);$$('#accs .chip').forEach(x=>x.setAttribute('aria-pressed',x===b));if(lumi){lumi.acc(me.acc);lumi.jump()}say(me.acc==='none'?'Back to basics.':'Do I look cute?')}));
+function rnd(seed){let s=seed;return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646}}
+function drawMe(){const n=flowers();$('#flowerCount').textContent=n+' flower'+(n===1?'':'s');
+ const R=rnd(42),FC=['#ff8fa3','#ffd166','#a78bfa','#7bdcb5','#60a5fa','#ff5d73','#ffb38a'];let fl='';
+ for(let i=0;i<Math.min(n,80);i++){const x=30+R()*740,y=150+R()*85,c=FC[i%7],h=18+R()*26,s=.8+R()*.6;
+  fl+=`<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${s.toFixed(2)})"><path d="M0 0 V-${h.toFixed(0)}" stroke="#4caf7d" stroke-width="3" stroke-linecap="round"/><ellipse cx="6" cy="-${(h*.5).toFixed(0)}" rx="6" ry="3" fill="#4caf7d" transform="rotate(-30 6 -${(h*.5).toFixed(0)})"/>${[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="-7" rx="4.5" ry="7" fill="${c}" transform="translate(0 -${h.toFixed(0)}) rotate(${a})"/>`).join('')}<circle cx="0" cy="-${h.toFixed(0)}" r="3.6" fill="#fff3b0"/></g>`}
+ $('#garden').innerHTML=`<rect width="800" height="260" fill="#cfe6ff"/><circle cx="700" cy="60" r="34" fill="#ffd166"/><circle cx="700" cy="60" r="48" fill="#ffd166" opacity=".25"/><ellipse cx="160" cy="70" rx="60" ry="18" fill="#fff" opacity=".9"/><ellipse cx="200" cy="58" rx="40" ry="16" fill="#fff" opacity=".9"/><ellipse cx="480" cy="90" rx="50" ry="14" fill="#fff" opacity=".8"/><path d="M0 170 Q200 130 400 160 T800 150 V260 H0z" fill="#9be3b7"/><path d="M0 200 Q250 170 500 195 T800 190 V260 H0z" fill="#7bdcb5"/>${fl}${n?'':'<text x="400" y="225" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="20" fill="#2b2341">Do a check-in to plant your first flower!</text>'}`;
+ $('#badges').innerHTML=BADGES.map(b=>{const on=b[2](stats);return `<div class="badge${on?'':' lock'}">${BSVG(b[3])}<b>${b[0]}</b>${b[1]}</div>`}).join('');
+ $('#meStats').innerHTML=[[stats.checkins,'check-ins'],[stats.breaths,'breathing rounds'],[stats.chats,'chats with Lumi'],[stats.ideas,'ideas shared']].map(x=>`<div class="tile"><span>${x[1]}</span><b>${x[0]||0}</b></div>`).join('')}
+$('#dlAll').addEventListener('click',()=>{const data={exported:new Date().toISOString(),me,stats,moods:moodLog,story,money,shifts,ideas};saveFile('my-lumi-data.json',JSON.stringify(data,null,2))});
+let wipeArm=false;
+$('#wipe').addEventListener('click',e=>{const b=e.currentTarget;if(!wipeArm){wipeArm=true;b.textContent='Tap again to delete everything';b.style.background='#ff5d73';b.style.color='#fff';setTimeout(()=>{wipeArm=false;b.textContent='Delete everything';b.style.background='';b.style.color=''},4000);return}
+ try{Object.keys(localStorage).filter(k=>k.startsWith('lumi-')).forEach(k=>localStorage.removeItem(k))}catch(err){}toast('Everything deleted.');setTimeout(()=>location.reload(),900)});
+
+/* ---------- start ---------- */
+drawHist();drawShifts();drawIdeas();renderChat();drawMe();drawToday();
+route();
+refreshBrain();
+if(me.deviceOn&&hasGPU&&me.brain!=='basic'&&!hasCloud())loadDevice();
+}</script>
+</body>
+</html>
